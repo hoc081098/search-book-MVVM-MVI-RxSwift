@@ -7,3 +7,9 @@
 //
 
 import Foundation
+
+class HomeVM : BaseVM<HomeIntent, HomeViewState, HomeSingleEvent> {
+    init() {
+        super.init(initialState: HomeViewState())
+    }
+}

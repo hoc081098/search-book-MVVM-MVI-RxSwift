@@ -7,8 +7,11 @@
 //
 
 import UIKit
+import RxSwift
 
 class HomeVC: UIViewController {
+    private let homeVM = HomeVM()
+    private var disposeBag = DisposeBag()
 
     private lazy var searchBar: UISearchBar = {
         let searchBar = UISearchBar(frame: .zero)
@@ -23,6 +26,14 @@ class HomeVC: UIViewController {
         self.navigationItem.titleView = searchBar
     }
 
-
+    override func viewWillAppear(_ animated: Bool) {
+        homeVM
+            .processIntent(Observable.empty())
+            .disposed(by: disposeBag)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        disposeBag = DisposeBag()
+    }
 }
 

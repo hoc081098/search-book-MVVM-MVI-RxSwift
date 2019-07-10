@@ -14,6 +14,7 @@
 		2E08413822D33EC900EA0BA8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2E08413622D33EC900EA0BA8 /* LaunchScreen.storyboard */; };
 		2E08414122D3462B00EA0BA8 /* HomeVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E08414022D3462B00EA0BA8 /* HomeVM.swift */; };
 		2E08414322D346F200EA0BA8 /* BaseVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E08414222D346F200EA0BA8 /* BaseVM.swift */; };
+		2E21919D22D5C285008A8CC9 /* HomeContract.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E21919C22D5C285008A8CC9 /* HomeContract.swift */; };
 		D74F01C52DB51A8E170E4A5E /* Pods_Search_Book.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B65E21D365DECB59FFA9A6A /* Pods_Search_Book.framework */; };
 /* End PBXBuildFile section */
 
@@ -27,6 +28,7 @@
 		2E08413922D33EC900EA0BA8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2E08414022D3462B00EA0BA8 /* HomeVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeVM.swift; sourceTree = "<group>"; };
 		2E08414222D346F200EA0BA8 /* BaseVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseVM.swift; sourceTree = "<group>"; };
+		2E21919C22D5C285008A8CC9 /* HomeContract.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeContract.swift; sourceTree = "<group>"; };
 		3B65E21D365DECB59FFA9A6A /* Pods_Search_Book.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Search_Book.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B77AC75C893F9A26CF65EFF4 /* Pods-Search Book.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Search Book.release.xcconfig"; path = "Target Support Files/Pods-Search Book/Pods-Search Book.release.xcconfig"; sourceTree = "<group>"; };
 		F90BEA91613BCB68D111AFFC /* Pods-Search Book.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Search Book.debug.xcconfig"; path = "Target Support Files/Pods-Search Book/Pods-Search Book.debug.xcconfig"; sourceTree = "<group>"; };
@@ -73,6 +75,7 @@
 		2E08412C22D33EC700EA0BA8 /* Search Book */ = {
 			isa = PBXGroup;
 			children = (
+				2E21919E22D5C82E008A8CC9 /* Domain */,
 				2E08413F22D3452C00EA0BA8 /* Home */,
 				2E08412D22D33EC700EA0BA8 /* AppDelegate.swift */,
 				2E08413122D33EC700EA0BA8 /* Main.storyboard */,
@@ -89,8 +92,16 @@
 			children = (
 				2E08412F22D33EC700EA0BA8 /* HomeVC.swift */,
 				2E08414022D3462B00EA0BA8 /* HomeVM.swift */,
+				2E21919C22D5C285008A8CC9 /* HomeContract.swift */,
 			);
 			path = Home;
+			sourceTree = "<group>";
+		};
+		2E21919E22D5C82E008A8CC9 /* Domain */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Domain;
 			sourceTree = "<group>";
 		};
 		AFAA617D5E66F9C422B7D4A6 /* Pods */ = {
@@ -219,6 +230,7 @@
 			files = (
 				2E08414122D3462B00EA0BA8 /* HomeVM.swift in Sources */,
 				2E08414322D346F200EA0BA8 /* BaseVM.swift in Sources */,
+				2E21919D22D5C285008A8CC9 /* HomeContract.swift in Sources */,
 				2E08413022D33EC700EA0BA8 /* HomeVC.swift in Sources */,
 				2E08412E22D33EC700EA0BA8 /* AppDelegate.swift in Sources */,
 			);
