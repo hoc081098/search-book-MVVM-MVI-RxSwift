@@ -6,4 +6,5 @@ target 'Search Book' do
   pod 'RxSwift', '~> 4.5'
   pod 'RxCocoa', '~> 4.5'
   pod 'Alamofire', '~> 4.0'
+  pod 'RxAlamofire'
 end
