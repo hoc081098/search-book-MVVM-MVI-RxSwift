@@ -20,6 +20,9 @@
 		2E2191A622D5CBAD008A8CC9 /* BookResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E2191A522D5CBAD008A8CC9 /* BookResponse.swift */; };
 		2E2191A822D5CBBE008A8CC9 /* BookApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E2191A722D5CBBE008A8CC9 /* BookApi.swift */; };
 		3262312D85734B391270A55A /* Pods_Search_Book.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CFE5A3C54BECF25F8812EF60 /* Pods_Search_Book.framework */; };
+		4D8E632F91C827BFBD67FF43 /* BookRepositoryImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D8E6E5D24463F0660D86982 /* BookRepositoryImpl.swift */; };
+		4D8E6E7B40B2761DFFF077AB /* Mappers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D8E612E7EB5DBE11FF36826 /* Mappers.swift */; };
+		8F48B1FC231EAB9D007F7CF3 /* HomeInteractorImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F48B1FB231EAB9D007F7CF3 /* HomeInteractorImpl.swift */; };
 		8FFD6E912319A1B000869B08 /* CachePolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FFD6E902319A1B000869B08 /* CachePolicy.swift */; };
 /* End PBXBuildFile section */
 
@@ -38,6 +41,9 @@
 		2E2191A122D5CB0F008A8CC9 /* BookRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookRepository.swift; sourceTree = "<group>"; };
 		2E2191A522D5CBAD008A8CC9 /* BookResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookResponse.swift; sourceTree = "<group>"; };
 		2E2191A722D5CBBE008A8CC9 /* BookApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookApi.swift; sourceTree = "<group>"; };
+		4D8E612E7EB5DBE11FF36826 /* Mappers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Mappers.swift; sourceTree = "<group>"; };
+		4D8E6E5D24463F0660D86982 /* BookRepositoryImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BookRepositoryImpl.swift; sourceTree = "<group>"; };
+		8F48B1FB231EAB9D007F7CF3 /* HomeInteractorImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeInteractorImpl.swift; sourceTree = "<group>"; };
 		8FFD6E902319A1B000869B08 /* CachePolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CachePolicy.swift; sourceTree = "<group>"; };
 		A1A0CE2DD6D18B0771D8ACE6 /* Pods-Search Book.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Search Book.release.xcconfig"; path = "Target Support Files/Pods-Search Book/Pods-Search Book.release.xcconfig"; sourceTree = "<group>"; };
 		CFE5A3C54BECF25F8812EF60 /* Pods_Search_Book.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Search_Book.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -96,6 +102,7 @@
 				2E08412F22D33EC700EA0BA8 /* HomeVC.swift */,
 				2E08414022D3462B00EA0BA8 /* HomeVM.swift */,
 				2E21919C22D5C285008A8CC9 /* HomeContract.swift */,
+				8F48B1FB231EAB9D007F7CF3 /* HomeInteractorImpl.swift */,
 			);
 			path = Home;
 			sourceTree = "<group>";
@@ -114,6 +121,8 @@
 			isa = PBXGroup;
 			children = (
 				2E2191A422D5CB9A008A8CC9 /* Remote */,
+				4D8E6E5D24463F0660D86982 /* BookRepositoryImpl.swift */,
+				4D8E612E7EB5DBE11FF36826 /* Mappers.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -290,6 +299,9 @@
 				2E2191A622D5CBAD008A8CC9 /* BookResponse.swift in Sources */,
 				8FFD6E912319A1B000869B08 /* CachePolicy.swift in Sources */,
 				2E2191A822D5CBBE008A8CC9 /* BookApi.swift in Sources */,
+				8F48B1FC231EAB9D007F7CF3 /* HomeInteractorImpl.swift in Sources */,
+				4D8E632F91C827BFBD67FF43 /* BookRepositoryImpl.swift in Sources */,
+				4D8E6E7B40B2761DFFF077AB /* Mappers.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

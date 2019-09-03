@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import RxSwift
 
 // MARK: - Intent
 enum HomeIntent {
@@ -27,13 +28,22 @@ struct HomeViewState: Equatable {
     let isNextPageLoading: Bool
     let nextPageError: HomeError?
 
-    init() {
-        searchTerm = ""
-        books = []
-        isFirstPageLoading = true
-        firstPageError = nil
-        isNextPageLoading = false
-        nextPageError = nil
+    func copyWith(
+        searchTerm: String? = nil,
+        books: [HomeBookItem]? = nil,
+        isFirstPageLoading: Bool? = nil,
+        firstPageError: HomeError? = nil,
+        isNextPageLoading: Bool? = nil,
+        nextPageError: HomeError? = nil
+    ) -> HomeViewState {
+        return HomeViewState(
+            searchTerm: searchTerm ?? self.searchTerm,
+            books: books ?? self.books,
+            isFirstPageLoading: isFirstPageLoading ?? self.isFirstPageLoading,
+            firstPageError: firstPageError,
+            isNextPageLoading: isNextPageLoading ?? self.isNextPageLoading,
+            nextPageError: nextPageError
+        )
     }
 }
 
@@ -83,8 +93,12 @@ enum PartialChange {
     case loadingFirstPage
     case loadFirstPageError(error: HomeError, searchTerm: String)
     case firstPageLoaded(books: [HomeBookItem], searchTerm: String)
-    
+
     case loadingNextPage
     case nextPageLoaded(books: [HomeBookItem], searchTerm: String)
     case loadNextPageError(error: HomeError, searchTerm: String)
+}
+
+protocol HomeInteractor {
+    func searchBook(query: String) -> Observable<PartialChange>
 }
