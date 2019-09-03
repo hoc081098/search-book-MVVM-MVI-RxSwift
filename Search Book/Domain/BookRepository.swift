@@ -11,4 +11,6 @@ import RxSwift
 
 protocol BookRepository {
     func searchBook(query: String, startIndex: Int) -> Single<[Book]>
+
+    func getBookBy(id: String, with: CachePolicy) -> Observable<Book>
 }

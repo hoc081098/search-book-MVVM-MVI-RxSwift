@@ -7,9 +7,34 @@
 //
 
 import Foundation
+import RxSwift
+import RxCocoa
+import RxSwiftExt
 
-class HomeVM : BaseVM<HomeIntent, HomeViewState, HomeSingleEvent> {
-    init() {
-        super.init(initialState: HomeViewState())
+class HomeVM: MviViewModelType {
+    private let intentS = PublishRelay<HomeIntent>()
+    private let singleEventS = PublishRelay<HomeSingleEvent>()
+    private let bookRepository: BookRepository
+    private let disposeBag = DisposeBag()
+
+    let state$: Driver<HomeViewState>
+    let singleEvent$: Signal<HomeSingleEvent>
+
+    func process(intent$: Observable<HomeIntent>) -> Disposable {
+        return intent$.bind(to: intentS)
+    }
+
+    init(bookRepository: BookRepository) {
+        self.bookRepository = bookRepository
+        singleEvent$ = singleEventS.asSignal()
+
+        intentS
+            .filterMap { (intent: HomeIntent) -> FilterMap<String> in
+                if case .search(let searchTerm) = intent {
+                    return .map(searchTerm)
+                } else {
+                    return .ignore
+                }
+            }.flatMapLatest { searchTerm in }
     }
 }

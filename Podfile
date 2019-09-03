@@ -3,8 +3,10 @@
 target 'Search Book' do
   use_frameworks!
   
-  pod 'RxSwift', '~> 4.5'
-  pod 'RxCocoa', '~> 4.5'
-  pod 'Alamofire', '~> 4.0'
+  pod 'RxSwift'
+  pod 'RxCocoa'
+  pod 'RxSwiftExt'
+  
+  pod 'Alamofire'
   pod 'RxAlamofire'
 end
