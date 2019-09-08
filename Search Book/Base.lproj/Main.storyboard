@@ -21,22 +21,50 @@
                                 <rect key="frame" x="0.0" y="64" width="375" height="603"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="home_cell" textLabel="N3P-Ti-j8O" style="IBUITableViewCellStyleDefault" id="a1q-uw-SQT">
-                                        <rect key="frame" x="0.0" y="28" width="375" height="44"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="home_cell" rowHeight="124" id="QJr-ii-GLN" customClass="HomeCell" customModule="Search_Book" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="28" width="375" height="124"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="a1q-uw-SQT" id="g1F-IU-8fC">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="QJr-ii-GLN" id="HzZ-OQ-PZr">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="123.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="N3P-Ti-j8O">
-                                                    <rect key="frame" x="15" y="0.0" width="345" height="43.5"/>
-                                                    <autoresizingMask key="autoresizingMask"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="SeG-H8-jgn">
+                                                    <rect key="frame" x="0.0" y="0.0" width="96" height="144.5"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="144" id="L5j-ZY-YIg"/>
+                                                        <constraint firstAttribute="width" constant="96" id="smS-dI-rNg"/>
+                                                    </constraints>
+                                                </imageView>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zRY-2T-mHT">
+                                                    <rect key="frame" x="104" y="8" width="263" height="21.5"/>
+                                                    <fontDescription key="fontDescription" name="Thonburi-Bold" family="Thonburi" pointSize="16"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Subtitle" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9Ht-dF-m2N">
+                                                    <rect key="frame" x="104" y="37.5" width="263" height="18.5"/>
+                                                    <fontDescription key="fontDescription" name="Thonburi" family="Thonburi" pointSize="14"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
+                                            <constraints>
+                                                <constraint firstItem="9Ht-dF-m2N" firstAttribute="leading" secondItem="SeG-H8-jgn" secondAttribute="trailing" constant="8" id="4te-H4-d71"/>
+                                                <constraint firstAttribute="bottom" secondItem="SeG-H8-jgn" secondAttribute="bottom" id="6hK-gl-TKb"/>
+                                                <constraint firstItem="SeG-H8-jgn" firstAttribute="top" secondItem="HzZ-OQ-PZr" secondAttribute="top" id="LIY-Dq-DW7"/>
+                                                <constraint firstItem="zRY-2T-mHT" firstAttribute="top" secondItem="HzZ-OQ-PZr" secondAttribute="top" constant="8" id="WGu-El-6n4"/>
+                                                <constraint firstAttribute="trailing" secondItem="9Ht-dF-m2N" secondAttribute="trailing" constant="8" id="X57-Np-Xf2"/>
+                                                <constraint firstItem="zRY-2T-mHT" firstAttribute="leading" secondItem="SeG-H8-jgn" secondAttribute="trailing" constant="8" id="cjl-Ps-9BI"/>
+                                                <constraint firstItem="9Ht-dF-m2N" firstAttribute="top" secondItem="zRY-2T-mHT" secondAttribute="bottom" constant="8" id="htB-YE-sJk"/>
+                                                <constraint firstAttribute="trailing" secondItem="zRY-2T-mHT" secondAttribute="trailing" constant="8" id="j3b-oI-tQE"/>
+                                                <constraint firstItem="SeG-H8-jgn" firstAttribute="leading" secondItem="HzZ-OQ-PZr" secondAttribute="leading" id="rwF-NA-brp"/>
+                                            </constraints>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="imageThumbnail" destination="SeG-H8-jgn" id="uVY-pl-XFA"/>
+                                            <outlet property="labelSubtitle" destination="9Ht-dF-m2N" id="wze-59-8pk"/>
+                                            <outlet property="labelTitle" destination="zRY-2T-mHT" id="thp-xN-Oom"/>
+                                        </connections>
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>

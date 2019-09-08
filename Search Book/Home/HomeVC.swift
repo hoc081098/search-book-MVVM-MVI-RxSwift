@@ -9,10 +9,43 @@
 import UIKit
 import RxSwift
 import RxCocoa
+import Kingfisher
 
 let api = BookApi()
 let bookRepo = BookRepositoryImpl(bookApi: api)
 let homeInteractor = HomeInteractorImpl(bookRepository: bookRepo)
+
+class HomeCell: UITableViewCell {
+    @IBOutlet weak var imageThumbnail: UIImageView!
+    @IBOutlet weak var labelTitle: UILabel!
+    @IBOutlet weak var labelSubtitle: UILabel!
+
+    override func awakeFromNib() {
+        super.awakeFromNib()
+    }
+
+    func bind(_ item: HomeBookItem) {
+        let url = URL.init(string: item.thumbnail ?? "")
+
+        let processor = DownsamplingImageProcessor(size: self.imageThumbnail.frame.size)
+        >> RoundCornerImageProcessor(cornerRadius: 8)
+
+        self.imageThumbnail.kf.indicatorType = .activity
+        self.imageThumbnail.kf.setImage(
+            with: url,
+            placeholder: UIImage.init(named: "no_image.png"),
+            options: [
+                    .processor(processor),
+                    .scaleFactor(UIScreen.main.scale),
+                    .transition(.fade(1)),
+                    .cacheOriginalImage
+            ]
+        )
+
+        self.labelTitle.text = item.title
+        self.labelSubtitle.text = item.subtitle ?? "No subtitle"
+    }
+}
 
 class HomeVC: UIViewController {
     private let homeVM = HomeVM(homeInteractor: homeInteractor)
@@ -36,15 +69,16 @@ class HomeVC: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         homeVM
             .state$
-        .asObservable()
-            .bind(to: self.tableView.rx.items("home_cell", dataSource: <#T##DataSource##DataSource#>)) { (_, result, cell) in
-                cell.textLabel?.text = "\(result)"
+            .map { $0.books }
+            .drive(self.tableView.rx.items(cellIdentifier: "home_cell", cellType: HomeCell.self)) { row, item, cell in
+                cell.bind(item)
             }
+            .disposed(by: disposeBag)
 
         homeVM
             .process(intent$: searchBar.rx.text.asObservable().map {
-                HomeIntent.search(searchTerm: $0 ?? "")
-            })
+                    HomeIntent.search(searchTerm: $0 ?? "")
+                })
             .disposed(by: disposeBag)
     }
 
