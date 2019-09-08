@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum AppError : Error {
+enum AppError: Error {
     case networkError(Error?)
     case serverResponseError(Int, String)
     case unexpectedError(Error?)
