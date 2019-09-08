@@ -20,39 +20,52 @@ enum HomeIntent {
 // MARK: - ViewState
 struct HomeViewState: Equatable {
     let searchTerm: String
-    let books: [HomeBookItem]
-
-    let isFirstPageLoading: Bool
-    let firstPageError: HomeError?
-
-    let isNextPageLoading: Bool
-    let nextPageError: HomeError?
+    let items: [HomeItem]
+    let books: [HomeBook]
 
     func copyWith(
         searchTerm: String? = nil,
-        books: [HomeBookItem]? = nil,
-        isFirstPageLoading: Bool? = nil,
-        firstPageError: HomeError? = nil,
-        isNextPageLoading: Bool? = nil,
-        nextPageError: HomeError? = nil
+        items: [HomeItem]? = nil,
+        books: [HomeBook]? = nil
     ) -> HomeViewState {
         return HomeViewState(
             searchTerm: searchTerm ?? self.searchTerm,
-            books: books ?? self.books,
-            isFirstPageLoading: isFirstPageLoading ?? self.isFirstPageLoading,
-            firstPageError: firstPageError,
-            isNextPageLoading: isNextPageLoading ?? self.isNextPageLoading,
-            nextPageError: nextPageError
+            items: items ?? self.items,
+            books: books ?? self.books
         )
     }
 }
 
 enum HomeError: Equatable {
     case networkError
-    case serverResponseError
+    case serverResponseError(Int, String)
+    case unexpectedError
 }
 
-struct HomeBookItem: Equatable {
+extension HomeError {
+    init(from error: Error) {
+        if let appError = error as? AppError {
+            switch appError {
+            case .networkError:
+                self = .networkError
+            case .serverResponseError(let code, let message):
+                self = .serverResponseError(code, message)
+            case .unexpectedError:
+                self = .unexpectedError
+            }
+        } else {
+            self = .unexpectedError
+        }
+    }
+}
+
+enum HomeItem: Equatable {
+    case loading
+    case error(HomeError, Bool)
+    case book(HomeBook)
+}
+
+struct HomeBook: Equatable {
     let id: String
     let title: String?
     let subtitle: String?
@@ -60,7 +73,7 @@ struct HomeBookItem: Equatable {
     let isFavorited: Bool?
 }
 
-extension HomeBookItem {
+extension HomeBook {
     init(fromDomain domain: Book) {
         id = domain.id
         title = domain.title
@@ -92,13 +105,33 @@ enum HomeSingleEvent {
 enum PartialChange {
     case loadingFirstPage
     case loadFirstPageError(error: HomeError, searchTerm: String)
-    case firstPageLoaded(books: [HomeBookItem], searchTerm: String)
+    case firstPageLoaded(books: [HomeBook], searchTerm: String)
 
     case loadingNextPage
-    case nextPageLoaded(books: [HomeBookItem], searchTerm: String)
+    case nextPageLoaded(books: [HomeBook], searchTerm: String)
     case loadNextPageError(error: HomeError, searchTerm: String)
+
+    var name: String {
+        get {
+            switch self {
+            case .loadingFirstPage:
+                return "loadingFirstPage"
+            case .loadFirstPageError:
+                return "loadFirstPageError"
+            case .firstPageLoaded:
+                return "firstPageLoaded"
+            case .loadingNextPage:
+                return "loadingNextPage"
+            case .nextPageLoaded:
+                return "nextPageLoaded"
+            case .loadNextPageError:
+                return "loadNextPageError"
+            }
+        }
+    }
 }
 
 protocol HomeInteractor {
     func searchBook(query: String) -> Observable<PartialChange>
+    func loadNextPage(query: String, startIndex: Int) -> Observable<PartialChange>
 }

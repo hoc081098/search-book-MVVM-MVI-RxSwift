@@ -66,6 +66,66 @@
                                             <outlet property="labelTitle" destination="zRY-2T-mHT" id="thp-xN-Oom"/>
                                         </connections>
                                     </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="loading_cell" rowHeight="96" id="WW0-Q5-tM5" customClass="LoadingCell" customModule="Search_Book" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="152" width="375" height="96"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="WW0-Q5-tM5" id="rCW-v3-3bT">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="95.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="cBE-DX-CRL">
+                                                    <rect key="frame" x="177.5" y="38" width="20" height="20"/>
+                                                </activityIndicatorView>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="cBE-DX-CRL" firstAttribute="centerX" secondItem="rCW-v3-3bT" secondAttribute="centerX" id="VhZ-2p-Myq"/>
+                                                <constraint firstItem="cBE-DX-CRL" firstAttribute="centerY" secondItem="rCW-v3-3bT" secondAttribute="centerY" id="cEl-52-IqJ"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="indicator" destination="cBE-DX-CRL" id="VwB-r5-ni9"/>
+                                        </connections>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="error_cell" rowHeight="96" id="Ie6-G3-cBY" customClass="ErrorCell" customModule="Search_Book" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="248" width="375" height="96"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Ie6-G3-cBY" id="6Eg-dh-PFD">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="95.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Error" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ix5-zY-DHg">
+                                                    <rect key="frame" x="8" y="8" width="359" height="31.5"/>
+                                                    <fontDescription key="fontDescription" name="Thonburi" family="Thonburi" pointSize="14"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IEh-6A-PWQ">
+                                                    <rect key="frame" x="32" y="47.5" width="311" height="40"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="40" id="gn8-lt-E2L"/>
+                                                    </constraints>
+                                                    <fontDescription key="fontDescription" name="Thonburi" family="Thonburi" pointSize="15"/>
+                                                    <state key="normal" title="Retry"/>
+                                                    <connections>
+                                                        <action selector="tappedRetry:" destination="Ie6-G3-cBY" eventType="touchUpInside" id="4f0-zc-KeC"/>
+                                                    </connections>
+                                                </button>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="IEh-6A-PWQ" firstAttribute="leading" secondItem="6Eg-dh-PFD" secondAttribute="leading" constant="32" id="CKM-b1-xml"/>
+                                                <constraint firstItem="Ix5-zY-DHg" firstAttribute="leading" secondItem="6Eg-dh-PFD" secondAttribute="leading" constant="8" id="E05-M3-eQH"/>
+                                                <constraint firstItem="IEh-6A-PWQ" firstAttribute="top" secondItem="Ix5-zY-DHg" secondAttribute="bottom" constant="8" id="EnA-tR-JtC"/>
+                                                <constraint firstItem="Ix5-zY-DHg" firstAttribute="top" secondItem="6Eg-dh-PFD" secondAttribute="top" constant="8" id="GEV-MA-foi"/>
+                                                <constraint firstAttribute="trailing" secondItem="Ix5-zY-DHg" secondAttribute="trailing" constant="8" id="PVX-bE-Qhj"/>
+                                                <constraint firstAttribute="bottom" secondItem="IEh-6A-PWQ" secondAttribute="bottom" constant="8" id="YaZ-UT-Df2"/>
+                                                <constraint firstItem="IEh-6A-PWQ" firstAttribute="centerX" secondItem="6Eg-dh-PFD" secondAttribute="centerX" id="gqc-WT-HDp"/>
+                                                <constraint firstAttribute="trailing" secondItem="IEh-6A-PWQ" secondAttribute="trailing" constant="32" id="ljS-w1-DJE"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="lableError" destination="Ix5-zY-DHg" id="f28-I3-8Kx"/>
+                                        </connections>
+                                    </tableViewCell>
                                 </prototypes>
                             </tableView>
                         </subviews>

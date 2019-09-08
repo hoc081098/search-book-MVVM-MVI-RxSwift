@@ -15,12 +15,12 @@ class BookRepositoryImpl: BookRepository {
 
     func searchBook(query: String, startIndex: Int) -> Single<[Book]> {
         return bookApi.searchBook(query: query, startIndex: startIndex)
-            .map { apiResult in
+            .flatMap { apiResult in
                 switch apiResult {
                 case .success(let value):
-                    return value.books.map(toBookDomain(from:))
+                    return .just(value.books.map(toBookDomain(from:)))
                 case .failure(let error):
-                    return []
+                    return .error(AppError.serverResponseError(error.code, error.message))
                 }
             }
     }

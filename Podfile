@@ -6,6 +6,7 @@ target 'Search Book' do
   pod 'RxSwift'
   pod 'RxCocoa'
   pod 'RxSwiftExt'
+  pod 'RxDataSources'
   
   pod 'Alamofire'
   pod 'RxAlamofire'

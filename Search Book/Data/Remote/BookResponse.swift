@@ -46,9 +46,9 @@ struct BookResponse: Decodable {
         self.publishedDate = try? volumeInfoContainer.decode(String?.self, forKey: .publishedDate)
         self.authors = try? volumeInfoContainer.decode([String]?.self, forKey: .authors)
 
-        let imageLinksContainer = try! volumeInfoContainer.nestedContainer(keyedBy: ImageLinksKeys.self, forKey: .imageLinks)
-        self.thumbnail = try? imageLinksContainer.decode(String?.self, forKey: .thumbnail)
-        self.largeImage = try? imageLinksContainer.decode(String?.self, forKey: .smallThumbnail)
+        let imageLinksContainer = try? volumeInfoContainer.nestedContainer(keyedBy: ImageLinksKeys.self, forKey: .imageLinks)
+        self.thumbnail = try? imageLinksContainer?.decode(String?.self, forKey: .thumbnail)
+        self.largeImage = try? imageLinksContainer?.decode(String?.self, forKey: .smallThumbnail)
     }
 
     enum BookKeys: String, CodingKey {

@@ -17,14 +17,31 @@ class HomeInteractorImpl: HomeInteractor {
     }
 
     func searchBook(query: String) -> Observable<PartialChange> {
+        print("Search \(query)")
         return self.bookRepository
             .searchBook(query: query, startIndex: 0)
+            .do(onSuccess: { _ in print("Search \(Thread.current)") })
             .asObservable()
-            .map { books in books.map { book in HomeBookItem(fromDomain: book) } }
+            .map { books in books.map { book in HomeBook(fromDomain: book) } }
             .map { books in .firstPageLoaded(books: books, searchTerm: query) }
             .startWith(.loadingFirstPage)
             .catchError { (error: Error) -> Observable<PartialChange> in
-                .just(.loadFirstPageError(error: .networkError, searchTerm: query))
-            }
+                    .just(.loadFirstPageError(error: .init(from: error), searchTerm: query))
         }
     }
+
+    func loadNextPage(query: String, startIndex: Int) -> Observable<PartialChange> {
+        print("Load next page \(query), \(startIndex)")
+        return self.bookRepository
+            .searchBook(query: query, startIndex: startIndex)
+            .do(onSuccess: { _ in print("Search \(Thread.current)") })
+            .asObservable()
+            .map { books in books.map { book in HomeBook(fromDomain: book) } }
+            .map { books in .nextPageLoaded(books: books, searchTerm: query) }
+            .startWith(.loadingNextPage)
+            .catchError { (error: Error) -> Observable<PartialChange> in
+                    .just(.loadNextPageError(error: .init(from: error), searchTerm: query))
+
+        }
+    }
+}
