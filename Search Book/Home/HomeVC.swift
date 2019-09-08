@@ -154,7 +154,7 @@ class HomeVC: UIViewController {
                         .asObservable()
                         .throttle(0.4, scheduler: MainScheduler.instance)
                         .filter { _ in
-                            self.tableView.isNearBottomEdge(edgeOffset: 50)
+                            self.tableView.isNearBottomEdge(edgeOffset: 30)
                         }
                         .map { _ in HomeIntent.loadNextPage },
                     retryS.asObservable()
