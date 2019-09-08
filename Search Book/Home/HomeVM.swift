@@ -23,7 +23,7 @@ class HomeVM: MviViewModelType {
     private let viewStateS = BehaviorRelay<HomeViewState>(value: initialState)
 
     private let homeInteractor: HomeInteractor
-    private var disposeBag = DisposeBag()
+    private let disposeBag = DisposeBag()
 
     let state$: Driver<HomeViewState>
     let singleEvent$: Signal<HomeSingleEvent>
@@ -145,10 +145,6 @@ class HomeVM: MviViewModelType {
             .distinctUntilChanged()
             .bind(to: viewStateS)
             .disposed(by: disposeBag)
-    }
-
-    deinit {
-        disposeBag = DisposeBag()
     }
 
     static func reducer(vs: HomeViewState, change: PartialChange) -> HomeViewState {

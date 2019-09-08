@@ -78,7 +78,7 @@ class HomeCell: UITableViewCell {
 
 class HomeVC: UIViewController {
     private let homeVM = HomeVM(homeInteractor: homeInteractor)
-    private var disposeBag = DisposeBag()
+    private let disposeBag = DisposeBag()
     private let retryS = PublishRelay<HomeIntent>()
 
     @IBOutlet weak var tableView: UITableView!
@@ -162,10 +162,6 @@ class HomeVC: UIViewController {
                 )
             )
             .disposed(by: disposeBag)
-    }
-
-    deinit {
-        disposeBag = DisposeBag()
     }
 }
 
