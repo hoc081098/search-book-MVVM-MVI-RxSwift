@@ -24,6 +24,7 @@
 		4D8E6E7B40B2761DFFF077AB /* Mappers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D8E612E7EB5DBE11FF36826 /* Mappers.swift */; };
 		8F48B1FC231EAB9D007F7CF3 /* HomeInteractorImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F48B1FB231EAB9D007F7CF3 /* HomeInteractorImpl.swift */; };
 		8F5D283D232546FA0050F748 /* AppError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F5D283C232546FA0050F748 /* AppError.swift */; };
+		8F7640892326099600F20543 /* DetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F7640882326099600F20543 /* DetailVC.swift */; };
 		8FFD6E912319A1B000869B08 /* CachePolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FFD6E902319A1B000869B08 /* CachePolicy.swift */; };
 /* End PBXBuildFile section */
 
@@ -46,6 +47,7 @@
 		4D8E6E5D24463F0660D86982 /* BookRepositoryImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BookRepositoryImpl.swift; sourceTree = "<group>"; };
 		8F48B1FB231EAB9D007F7CF3 /* HomeInteractorImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeInteractorImpl.swift; sourceTree = "<group>"; };
 		8F5D283C232546FA0050F748 /* AppError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppError.swift; sourceTree = "<group>"; };
+		8F7640882326099600F20543 /* DetailVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailVC.swift; sourceTree = "<group>"; };
 		8FFD6E902319A1B000869B08 /* CachePolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CachePolicy.swift; sourceTree = "<group>"; };
 		9DD3686F474EC652A41D21E5 /* Pods-Search Book.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Search Book.debug.xcconfig"; path = "Target Support Files/Pods-Search Book/Pods-Search Book.debug.xcconfig"; sourceTree = "<group>"; };
 		C992F43AFCA6576B1AF7D739 /* Pods_Search_Book.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Search_Book.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -150,9 +152,18 @@
 		8F5D283E2325546B0050F748 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				8F7640872326097900F20543 /* Detail */,
 				2E08413F22D3452C00EA0BA8 /* Home */,
 			);
 			path = UI;
+			sourceTree = "<group>";
+		};
+		8F7640872326097900F20543 /* Detail */ = {
+			isa = PBXGroup;
+			children = (
+				8F7640882326099600F20543 /* DetailVC.swift */,
+			);
+			path = Detail;
 			sourceTree = "<group>";
 		};
 		8FFD6E8F2319958F00869B08 /* Base */ = {
@@ -311,6 +322,7 @@
 				2E2191A022D5CAA0008A8CC9 /* Book.swift in Sources */,
 				2E21919D22D5C285008A8CC9 /* HomeContract.swift in Sources */,
 				2E08413022D33EC700EA0BA8 /* HomeVC.swift in Sources */,
+				8F7640892326099600F20543 /* DetailVC.swift in Sources */,
 				2E2191A222D5CB0F008A8CC9 /* BookRepository.swift in Sources */,
 				2E08412E22D33EC700EA0BA8 /* AppDelegate.swift in Sources */,
 				2E2191A622D5CBAD008A8CC9 /* BookResponse.swift in Sources */,

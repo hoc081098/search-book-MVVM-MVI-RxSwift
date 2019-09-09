@@ -11,6 +11,7 @@ import RxSwift
 import RxCocoa
 import Kingfisher
 import RxDataSources
+import RxSwiftExt
 
 let api = BookApi()
 let bookRepo = BookRepositoryImpl(bookApi: api)
@@ -51,6 +52,7 @@ class HomeCell: UITableViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
+        self.selectionStyle = .none
     }
 
     func bind(_ book: HomeBook, _ row: Int) {
@@ -129,6 +131,27 @@ class HomeVC: UIViewController {
                 return dataSource.sectionModels[sectionIndex].model
             }
         )
+
+        self.tableView.rx
+            .itemSelected
+            .map { (indexPath: IndexPath) -> HomeItem in
+                let section = dataSource.sectionModels[indexPath.section]
+                return section.items[indexPath.row]
+            }
+            .filterMap { (item: HomeItem) -> FilterMap<HomeBook> in
+                if case .book(let book) = item {
+                    return .map(book)
+                } else {
+                    return .ignore
+                }
+            }
+            .subscribe(onNext: { book in
+                if let detailVC = self.storyboard?.instantiateViewController(withIdentifier: "DetailVC") {
+                    self.navigationController?.pushViewController(detailVC, animated: true)
+                }
+            })
+            .disposed(by: disposeBag)
+
 
         homeVM
             .state$
