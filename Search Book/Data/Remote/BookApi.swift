@@ -14,7 +14,7 @@ class BookApi {
     func searchBook(query: String, startIndex: Int) -> Single<ApiResult<ApiErrorMessage, BooksResponse>> {
         return RxAlamofire
             .requestData(
-                .get,
+                    .get,
                 "https://www.googleapis.com/books/v1/volumes",
                 parameters: [
                     "q": query,

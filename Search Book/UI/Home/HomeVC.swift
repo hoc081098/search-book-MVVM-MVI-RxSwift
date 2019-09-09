@@ -12,6 +12,7 @@ import RxCocoa
 import Kingfisher
 import RxDataSources
 import RxSwiftExt
+import MaterialComponents.MaterialSnackbar
 
 let api = BookApi()
 let bookRepo = BookRepositoryImpl(bookApi: api)
@@ -195,6 +196,30 @@ class HomeVC: UIViewController {
             .singleEvent$
             .emit(onNext: { event in
                 print("Event=\(event)")
+                
+                let message = MDCSnackbarMessage().apply {
+                    $0.duration = 2
+                    switch event {
+                    case .addedToFavorited(let book):
+                        $0.text = "Added '\(book.title ?? "")' to favorited"
+                    case .removedFromFavorited(let book):
+                        $0.text = "Removed '\(book.title ?? "")' from favorited"
+                    case .loadError(let error):
+                        let errorMessage: String
+                        
+                        switch error {
+                        case .networkError:
+                            errorMessage = "Network error"
+                        case .serverResponseError(_, let message):
+                            errorMessage = "Server response error: \(message)"
+                        case .unexpectedError:
+                            errorMessage = "Unexpected error"
+                        }
+                        
+                        $0.text = "Loaded error: \(errorMessage)"
+                    }
+                }
+                MDCSnackbarManager.show(message)
             })
             .disposed(by: disposeBag)
 

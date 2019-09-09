@@ -129,13 +129,27 @@ class HomeVM: MviViewModelType {
 
         let changes = [
             Observable.merge([loadNextPage$, retryNextPage$]).flatMapFirst { tuple in
-                homeInteractor.loadNextPage(
-                    query: tuple.1,
-                    startIndex: tuple.0
-                )
+                homeInteractor
+                    .loadNextPage(
+                        query: tuple.1,
+                        startIndex: tuple.0
+                    )
+                    .observeOn(MainScheduler.instance)
+                    .do(onNext: { change in
+                        if case .loadNextPageError(let error, _) = change {
+                            self.singleEventS.accept(.loadError(error))
+                        }
+                    })
             },
             Observable.merge([searchString$, retryFirstPage$]).flatMapLatest { searchTerm in
-                homeInteractor.searchBook(query: searchTerm)
+                homeInteractor
+                    .searchBook(query: searchTerm)
+                    .observeOn(MainScheduler.instance)
+                    .do(onNext: { change in
+                        if case .loadFirstPageError(let error, _) = change {
+                            self.singleEventS.accept(.loadError(error))
+                        }
+                    })
             }
         ]
 

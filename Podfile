@@ -12,4 +12,5 @@ target 'Search Book' do
   pod 'RxAlamofire'
   
   pod 'Kingfisher'
+  pod 'MaterialComponents/Snackbar'
 end

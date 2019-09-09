@@ -111,6 +111,7 @@ extension HomeBook {
 enum HomeSingleEvent {
     case addedToFavorited(HomeBook)
     case removedFromFavorited(HomeBook)
+    case loadError(HomeError)
 }
 
 // MARK: - Partial Change
