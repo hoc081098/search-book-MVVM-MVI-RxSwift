@@ -15,7 +15,11 @@ import RxSwiftExt
 
 let api = BookApi()
 let bookRepo = BookRepositoryImpl(bookApi: api)
-let homeInteractor = HomeInteractorImpl(bookRepository: bookRepo)
+let favoritedBooksRepo = FavoritedBooksRepositoryImpl(userDefaults: UserDefaults.standard)
+let homeInteractor = HomeInteractorImpl(
+    bookRepository: bookRepo,
+    favoritedBooksRepository: favoritedBooksRepo
+)
 
 class LoadingCell: UITableViewCell {
     @IBOutlet weak var indicator: UIActivityIndicatorView!
@@ -49,10 +53,24 @@ class HomeCell: UITableViewCell {
     @IBOutlet weak var imageThumbnail: UIImageView!
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelSubtitle: UILabel!
+    @IBOutlet weak var imageFav: UIImageView!
+
+    var tapImageFav: (() -> ())?
 
     override func awakeFromNib() {
         super.awakeFromNib()
         self.selectionStyle = .none
+
+        self.imageFav.letIt {
+            $0.tintColor = Colors.tintColor
+            $0.isUserInteractionEnabled = true
+            $0.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tappedImageFav)))
+        }
+
+    }
+
+    @objc func tappedImageFav() {
+        self.tapImageFav?()
     }
 
     func bind(_ book: HomeBook, _ row: Int) {
@@ -75,13 +93,17 @@ class HomeCell: UITableViewCell {
 
         self.labelTitle.text = "\(row) - \(book.title ?? "No title")"
         self.labelSubtitle.text = book.subtitle ?? "No subtitle"
+        
+        self.imageFav.image = book.isFavorited.flatMap { (fav: Bool) -> UIImage? in
+            return fav ? UIImage(named: "baseline_favorite_white_36pt") : UIImage(named: "baseline_favorite_border_white_36pt")
+        }
     }
 }
 
 class HomeVC: UIViewController {
     private let homeVM = HomeVM(homeInteractor: homeInteractor)
     private let disposeBag = DisposeBag()
-    private let retryS = PublishRelay<HomeIntent>()
+    private let intentS = PublishRelay<HomeIntent>()
 
     @IBOutlet weak var tableView: UITableView!
 
@@ -107,24 +129,27 @@ class HomeVC: UIViewController {
             configureCell: { dataSource, tableView, indexPath, item in
                 switch item {
                 case .book(let book):
-                    let cell = tableView.dequeueReusableCell(withIdentifier: "home_cell", for: indexPath) as! HomeCell
-                    cell.bind(book, indexPath.row)
-                    return cell
-                case .loading:
-                    let cell = tableView.dequeueReusableCell(withIdentifier: "loading_cell", for: indexPath) as! LoadingCell
-                    cell.bind()
-                    return cell
-                case .error(let error, let isFirstPage):
-                    let cell = tableView.dequeueReusableCell(withIdentifier: "error_cell", for: indexPath) as! ErrorCell
-                    cell.tapped = { [weak self] in
-                        self?.retryS.accept(
-                            isFirstPage
-                                ? .retryLoadFirstPage
-                                : .retryLoadNextPage
-                        )
+                    return (tableView.dequeueReusableCell(withIdentifier: "home_cell", for: indexPath) as! HomeCell).apply {
+                        $0.bind(book, indexPath.row)
+                        $0.tapImageFav = { [weak self] in
+                            self?.intentS.accept(.toggleFavorite(book: book))
+                        }
                     }
-                    cell.bind(error)
-                    return cell
+                case .loading:
+                    return (tableView.dequeueReusableCell(withIdentifier: "loading_cell", for: indexPath) as! LoadingCell).apply {
+                        $0.bind()
+                    }
+                case .error(let error, let isFirstPage):
+                    return (tableView.dequeueReusableCell(withIdentifier: "error_cell", for: indexPath) as! ErrorCell).apply {
+                        $0.tapped = { [weak self] in
+                            self?.intentS.accept(
+                                isFirstPage
+                                    ? .retryLoadFirstPage
+                                    : .retryLoadNextPage
+                            )
+                        }
+                        $0.bind(error)
+                    }
                 }
             },
             titleForHeaderInSection: { dataSource, sectionIndex in
@@ -165,6 +190,13 @@ class HomeVC: UIViewController {
             }
             .drive(self.tableView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
+        
+        homeVM
+            .singleEvent$
+            .emit(onNext: { event in
+                print("Event=\(event)")
+            })
+            .disposed(by: disposeBag)
 
         homeVM
             .process(
@@ -182,7 +214,7 @@ class HomeVC: UIViewController {
                             self.tableView.isNearBottomEdge(edgeOffset: 30)
                         }
                         .map { _ in HomeIntent.loadNextPage },
-                    retryS.asObservable()
+                    intentS.asObservable()
                     ]
                 )
             )

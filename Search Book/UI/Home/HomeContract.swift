@@ -15,6 +15,7 @@ enum HomeIntent {
     case retryLoadFirstPage
     case loadNextPage
     case retryLoadNextPage
+    case toggleFavorite(book: HomeBook)
 }
 
 // MARK: - ViewState
@@ -94,11 +95,22 @@ extension HomeBook {
             publishedDate: nil
         )
     }
+    
+    func withFavorited(_ favorited: Bool) -> HomeBook {
+        return HomeBook(
+            id: self.id,
+            title: self.title,
+            subtitle: self.subtitle,
+            thumbnail: self.thumbnail,
+            isFavorited: favorited
+        )
+    }
 }
 
 // MARK: - Event
 enum HomeSingleEvent {
-
+    case addedToFavorited(HomeBook)
+    case removedFromFavorited(HomeBook)
 }
 
 // MARK: - Partial Change
@@ -134,4 +146,6 @@ enum PartialChange {
 protocol HomeInteractor {
     func searchBook(query: String) -> Observable<PartialChange>
     func loadNextPage(query: String, startIndex: Int) -> Observable<PartialChange>
+    func toggleFavorited(book: HomeBook) -> Single<HomeSingleEvent>
+    func favoritedIds() -> Observable<Set<String>>
 }

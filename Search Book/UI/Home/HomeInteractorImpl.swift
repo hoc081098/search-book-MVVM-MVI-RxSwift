@@ -10,10 +10,13 @@ import Foundation
 import RxSwift
 
 class HomeInteractorImpl: HomeInteractor {
+
+    private let favoritedBooksRepository: FavoritedBooksRepository
     private let bookRepository: BookRepository
 
-    init(bookRepository: BookRepository) {
+    init(bookRepository: BookRepository, favoritedBooksRepository: FavoritedBooksRepository) {
         self.bookRepository = bookRepository
+        self.favoritedBooksRepository = favoritedBooksRepository
     }
 
     func searchBook(query: String) -> Observable<PartialChange> {
@@ -43,5 +46,27 @@ class HomeInteractorImpl: HomeInteractor {
                     .just(.loadNextPageError(error: .init(from: error), searchTerm: query))
 
         }
+    }
+
+    func toggleFavorited(book: HomeBook) -> Single<HomeSingleEvent> {
+        return Single
+            .deferred {
+                let result = self.favoritedBooksRepository.toggleFavorited(book: book.toDomain())
+                return .just(result)
+            }
+            .map { (result: ToggleFavoritedResult) -> HomeSingleEvent in
+                let added = result.added
+                let book = HomeBook(fromDomain: result.book)
+
+                if added {
+                    return .addedToFavorited(book)
+                } else {
+                    return .removedFromFavorited(book)
+                }
+        }
+    }
+
+    func favoritedIds() -> Observable<Set<String>> {
+        return favoritedBooksRepository.favoritedIds()
     }
 }

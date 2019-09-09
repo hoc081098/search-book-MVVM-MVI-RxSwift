@@ -47,13 +47,24 @@
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
+                                                <imageView clipsSubviews="YES" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="baseline_favorite_border_white_36pt" translatesAutoresizingMaskIntoConstraints="NO" id="OgL-L8-wpA">
+                                                    <rect key="frame" x="116" y="68" width="36" height="36"/>
+                                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    <color key="tintColor" red="0.94235390419999998" green="0.4128730893" blue="0.3355879188" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="36" id="2YQ-gQ-O87"/>
+                                                        <constraint firstAttribute="height" constant="36" id="fUb-co-MZR"/>
+                                                    </constraints>
+                                                </imageView>
                                             </subviews>
                                             <constraints>
                                                 <constraint firstItem="9Ht-dF-m2N" firstAttribute="leading" secondItem="SeG-H8-jgn" secondAttribute="trailing" constant="8" id="4te-H4-d71"/>
                                                 <constraint firstAttribute="bottom" secondItem="SeG-H8-jgn" secondAttribute="bottom" constant="4" id="6hK-gl-TKb"/>
                                                 <constraint firstItem="SeG-H8-jgn" firstAttribute="top" secondItem="HzZ-OQ-PZr" secondAttribute="top" constant="4" id="LIY-Dq-DW7"/>
+                                                <constraint firstItem="OgL-L8-wpA" firstAttribute="top" secondItem="9Ht-dF-m2N" secondAttribute="bottom" constant="12" id="Nz2-IJ-KS0"/>
                                                 <constraint firstItem="zRY-2T-mHT" firstAttribute="top" secondItem="HzZ-OQ-PZr" secondAttribute="top" constant="8" id="WGu-El-6n4"/>
                                                 <constraint firstAttribute="trailing" secondItem="9Ht-dF-m2N" secondAttribute="trailing" constant="8" id="X57-Np-Xf2"/>
+                                                <constraint firstItem="OgL-L8-wpA" firstAttribute="leading" secondItem="SeG-H8-jgn" secondAttribute="trailing" constant="12" id="cfB-nu-UYe"/>
                                                 <constraint firstItem="zRY-2T-mHT" firstAttribute="leading" secondItem="SeG-H8-jgn" secondAttribute="trailing" constant="8" id="cjl-Ps-9BI"/>
                                                 <constraint firstItem="9Ht-dF-m2N" firstAttribute="top" secondItem="zRY-2T-mHT" secondAttribute="bottom" constant="8" id="htB-YE-sJk"/>
                                                 <constraint firstAttribute="trailing" secondItem="zRY-2T-mHT" secondAttribute="trailing" constant="8" id="j3b-oI-tQE"/>
@@ -61,6 +72,7 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>
+                                            <outlet property="imageFav" destination="OgL-L8-wpA" id="DqF-Ho-GkM"/>
                                             <outlet property="imageThumbnail" destination="SeG-H8-jgn" id="uVY-pl-XFA"/>
                                             <outlet property="labelSubtitle" destination="9Ht-dF-m2N" id="wze-59-8pk"/>
                                             <outlet property="labelTitle" destination="zRY-2T-mHT" id="thp-xN-Oom"/>
@@ -172,6 +184,7 @@
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="ONT-rq-jiL">
                         <rect key="frame" x="0.0" y="20" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <color key="backgroundColor" red="0.94235390419999998" green="0.4128730893" blue="0.3355879188" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
@@ -183,4 +196,7 @@
             <point key="canvasLocation" x="309.60000000000002" y="-1012.4437781109445"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="baseline_favorite_border_white_36pt" width="36" height="36"/>
+    </resources>
 </document>

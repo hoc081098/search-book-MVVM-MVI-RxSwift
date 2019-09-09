@@ -139,11 +139,42 @@ class HomeVM: MviViewModelType {
             }
         ]
 
-        Observable.merge(changes)
-            .observeOn(MainScheduler.asyncInstance)
-            .scan(HomeVM.initialState, accumulator: HomeVM.reducer)
+        Observable.combineLatest(
+            Observable.merge(changes)
+                .observeOn(MainScheduler.asyncInstance)
+                .scan(HomeVM.initialState, accumulator: HomeVM.reducer)
+                .distinctUntilChanged(),
+            homeInteractor.favoritedIds()) { state, ids in
+            var books = [HomeBook]()
+            let items = state.items.map { (item: HomeItem) -> HomeItem in
+                switch item {
+                case .book(let book):
+                    let copied = book.withFavorited(ids.contains(book.id))
+                    books.append(copied)
+                    return .book(copied)
+                case .error, .loading:
+                    return item
+                }
+            }
+            return state.copyWith(items: items, books: books)
+        }
             .distinctUntilChanged()
             .bind(to: viewStateS)
+            .disposed(by: disposeBag)
+
+        intentS
+            .filterMap { (intent: HomeIntent) -> FilterMap<HomeBook> in
+                if case .toggleFavorite(let book) = intent {
+                    return .map(book)
+                } else {
+                    return .ignore
+                }
+            }
+            .groupBy { $0.id }
+            .map { $0.throttle(0.5, scheduler: MainScheduler.instance) }
+            .flatMap { $0 }
+            .concatMap { homeInteractor.toggleFavorited(book: $0) }
+            .subscribe(onNext: { self.singleEventS.accept($0) })
             .disposed(by: disposeBag)
     }
 
