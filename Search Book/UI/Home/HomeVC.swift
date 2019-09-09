@@ -94,6 +94,8 @@ class HomeVC: UIViewController {
         super.viewDidLoad()
 
         self.navigationItem.titleView = searchBar
+        self.tableView.estimatedRowHeight = 104
+        self.tableView.rowHeight = UITableView.automaticDimension
 
         bindVM()
     }

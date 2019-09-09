@@ -61,11 +61,11 @@ class HomeVM: MviViewModelType {
         }
 
         let loadNextPage$ = intentS
-            .filterMap { (intent: HomeIntent) -> FilterMap<Void> in
+            .filter { (intent: HomeIntent) -> Bool in
                 if case .loadNextPage = intent {
-                    return .map(())
+                    return true
                 } else {
-                    return .ignore
+                    return false
                 }
             }
             .withLatestFrom(viewStateS)
@@ -90,11 +90,11 @@ class HomeVM: MviViewModelType {
 
         let retryFirstPage$ = intentS
             .withLatestFrom(viewStateS, resultSelector: { ($0, $1) })
-            .filterMap { (tuple) -> FilterMap<Void> in
+            .filter { (tuple) -> Bool in
                 if case .retryLoadFirstPage = tuple.0 {
-                    return shouldRetryFirstPage(tuple.1) ? .map(()) : .ignore
+                    return shouldRetryFirstPage(tuple.1)
                 } else {
-                    return .ignore
+                    return false
                 }
             }
             .withLatestFrom(searchString$)
@@ -110,11 +110,11 @@ class HomeVM: MviViewModelType {
         }
 
         let retryNextPage$ = intentS
-            .filterMap { (intent: HomeIntent) -> FilterMap<Void> in
+            .filter { (intent: HomeIntent) -> Bool in
                 if case .retryLoadNextPage = intent {
-                    return .map(())
+                    return true
                 } else {
-                    return .ignore
+                    return false
                 }
             }
             .withLatestFrom(viewStateS)
