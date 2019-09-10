@@ -75,6 +75,11 @@ PODS:
   - RxSwiftExt/RxCocoa (3.4.0):
     - RxCocoa (~> 4.0)
     - RxSwiftExt/Core
+  - Swinject (2.6.2)
+  - SwinjectAutoregistration (2.6.0):
+    - Swinject (~> 2.6)
+  - SwinjectStoryboard (2.2.0):
+    - Swinject (~> 2.6)
 
 DEPENDENCIES:
   - Alamofire
@@ -85,6 +90,9 @@ DEPENDENCIES:
   - RxDataSources
   - RxSwift
   - RxSwiftExt
+  - Swinject
+  - SwinjectAutoregistration
+  - SwinjectStoryboard
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -99,6 +107,9 @@ SPEC REPOS:
     - RxDataSources
     - RxSwift
     - RxSwiftExt
+    - Swinject
+    - SwinjectAutoregistration
+    - SwinjectStoryboard
 
 SPEC CHECKSUMS:
   Alamofire: ae5c501addb7afdbb13687d7f2f722c78734c2d3
@@ -112,7 +123,10 @@ SPEC CHECKSUMS:
   RxDataSources: a843bad90c29817f5923ec8163f4af2de084ceb3
   RxSwift: f172070dfd1a93d70a9ab97a5a01166206e1c575
   RxSwiftExt: 01f8ecbeeb355698e9c75365ebe908b00dacf45d
+  Swinject: cf7458774b1b00323080a9c67e47a1ee7f9d2af1
+  SwinjectAutoregistration: 93a908f7543c401b0c315305ac0ae501efdbce89
+  SwinjectStoryboard: 32512ef16c2b0ff5b8f823b23539c4a50f6d3383
 
-PODFILE CHECKSUM: 896ac4f7483a208ee33fa2d3665ed66137ac49df
+PODFILE CHECKSUM: 8314b94e3d6317d1a853b910774561356dd48ccc
 
 COCOAPODS: 1.6.1

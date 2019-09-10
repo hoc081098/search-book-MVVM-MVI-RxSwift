@@ -13,14 +13,8 @@ import Kingfisher
 import RxDataSources
 import RxSwiftExt
 import MaterialComponents.MaterialSnackbar
-
-let api = BookApi()
-let bookRepo = BookRepositoryImpl(bookApi: api)
-let favoritedBooksRepo = FavoritedBooksRepositoryImpl(userDefaults: UserDefaults.standard)
-let homeInteractor = HomeInteractorImpl(
-    bookRepository: bookRepo,
-    favoritedBooksRepository: favoritedBooksRepo
-)
+import SwinjectStoryboard
+import Swinject
 
 class LoadingCell: UITableViewCell {
     @IBOutlet weak var indicator: UIActivityIndicatorView!
@@ -102,7 +96,9 @@ class HomeCell: UITableViewCell {
 }
 
 class HomeVC: UIViewController {
-    private let homeVM = HomeVM(homeInteractor: homeInteractor)
+    var homeVM: HomeVM!
+    
+    
     private let disposeBag = DisposeBag()
     private let intentS = PublishRelay<HomeIntent>()
 
@@ -172,9 +168,9 @@ class HomeVC: UIViewController {
                 }
             }
             .subscribe(onNext: { book in
-                if let detailVC = self.storyboard?.instantiateViewController(withIdentifier: "DetailVC") {
-                    self.navigationController?.pushViewController(detailVC, animated: true)
-                }
+                let storyboard = SwinjectStoryboard.create(name: "Main", bundle: nil)
+                let detailVC = storyboard.instantiateViewController(withIdentifier: "DetailVC")
+                self.navigationController?.pushViewController(detailVC, animated: true)
             })
             .disposed(by: disposeBag)
 

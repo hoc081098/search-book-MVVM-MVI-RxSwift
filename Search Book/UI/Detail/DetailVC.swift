@@ -9,11 +9,13 @@
 import UIKit
 
 class DetailVC: UIViewController {
+    var a: A?
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        print("A=\(String(describing: a))")
     }
     
 

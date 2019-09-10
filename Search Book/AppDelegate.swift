@@ -7,6 +7,72 @@
 //
 
 import UIKit
+import SwinjectStoryboard
+import SwinjectAutoregistration
+
+class A {
+    static var count = 0
+    let a: BookApi
+    init(a: BookApi) {
+        self.a = a
+        print("A::init \(A.count)")
+        A.count += 1
+    }
+    
+    deinit {
+        print("A::deini \(A.count-1)")
+    }
+}
+
+extension SwinjectStoryboard {
+    @objc class func setup() {
+        let container = self.defaultContainer
+
+        // MARK: - ViewController
+
+        container.storyboardInitCompleted(HomeVC.self) { resolver, controller in
+            controller.homeVM = resolver ~> HomeVM.self
+        }
+        container.storyboardInitCompleted(DetailVC.self) { resolver, controller in
+            controller.a = resolver ~> A.self
+        }
+
+        // MARK: - Data
+
+        container
+            .autoregister(BookApi.self, initializer: BookApi.init)
+            .inObjectScope(.container)
+        container
+            .register(UserDefaults.self) { _ in UserDefaults.standard }
+            .inObjectScope(.container)
+
+        container
+            .register(BookRepository.self) { resolver in
+                BookRepositoryImpl(bookApi: resolver ~> BookApi.self)
+            }
+            .inObjectScope(.container)
+        container
+            .register(FavoritedBooksRepository.self) { resolver in
+                FavoritedBooksRepositoryImpl(userDefaults: resolver ~> UserDefaults.self)
+            }
+            .inObjectScope(.container)
+
+        // MARK: - ViewModels
+
+        container
+            .register(HomeInteractor.self) { resolver in
+                HomeInteractorImpl(
+                    bookRepository: resolver ~> BookRepository.self,
+                    favoritedBooksRepository: resolver ~> FavoritedBooksRepository.self
+                )
+            }
+            .inObjectScope(.container)
+
+        container.autoregister(HomeVM.self, initializer: HomeVM.init(homeInteractor:))
+
+        container.autoregister(A.self, initializer: A.init(a:))
+    }
+}
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
