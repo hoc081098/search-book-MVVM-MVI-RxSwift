@@ -192,7 +192,7 @@ class HomeVM: MviViewModelType {
             .disposed(by: disposeBag)
     }
 
-    static func reducer(vs: HomeViewState, change: PartialChange) -> HomeViewState {
+    static func reducer(vs: HomeViewState, change: HomePartialChange) -> HomeViewState {
         print("Reducer: \(change.name) \(Thread.current)")
 
         switch change {

@@ -95,7 +95,7 @@ extension HomeBook {
             publishedDate: nil
         )
     }
-    
+
     func withFavorited(_ favorited: Bool) -> HomeBook {
         return HomeBook(
             id: self.id,
@@ -115,7 +115,7 @@ enum HomeSingleEvent {
 }
 
 // MARK: - Partial Change
-enum PartialChange {
+enum HomePartialChange {
     case loadingFirstPage
     case loadFirstPageError(error: HomeError, searchTerm: String)
     case firstPageLoaded(books: [HomeBook], searchTerm: String)
@@ -144,9 +144,10 @@ enum PartialChange {
     }
 }
 
+// MARK: - Interactor
 protocol HomeInteractor {
-    func searchBook(query: String) -> Observable<PartialChange>
-    func loadNextPage(query: String, startIndex: Int) -> Observable<PartialChange>
+    func searchBook(query: String) -> Observable<HomePartialChange>
+    func loadNextPage(query: String, startIndex: Int) -> Observable<HomePartialChange>
     func toggleFavorited(book: HomeBook) -> Single<HomeSingleEvent>
     func favoritedIds() -> Observable<Set<String>>
 }

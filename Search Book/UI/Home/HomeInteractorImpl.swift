@@ -19,7 +19,7 @@ class HomeInteractorImpl: HomeInteractor {
         self.favoritedBooksRepository = favoritedBooksRepository
     }
 
-    func searchBook(query: String) -> Observable<PartialChange> {
+    func searchBook(query: String) -> Observable<HomePartialChange> {
         print("Search \(query)")
         return self.bookRepository
             .searchBook(query: query, startIndex: 0)
@@ -28,12 +28,12 @@ class HomeInteractorImpl: HomeInteractor {
             .map { books in books.map { book in HomeBook(fromDomain: book) } }
             .map { books in .firstPageLoaded(books: books, searchTerm: query) }
             .startWith(.loadingFirstPage)
-            .catchError { (error: Error) -> Observable<PartialChange> in
+            .catchError { (error: Error) -> Observable<HomePartialChange> in
                     .just(.loadFirstPageError(error: .init(from: error), searchTerm: query))
         }
     }
 
-    func loadNextPage(query: String, startIndex: Int) -> Observable<PartialChange> {
+    func loadNextPage(query: String, startIndex: Int) -> Observable<HomePartialChange> {
         print("Load next page \(query), \(startIndex)")
         return self.bookRepository
             .searchBook(query: query, startIndex: startIndex)
@@ -42,7 +42,7 @@ class HomeInteractorImpl: HomeInteractor {
             .map { books in books.map { book in HomeBook(fromDomain: book) } }
             .map { books in .nextPageLoaded(books: books, searchTerm: query) }
             .startWith(.loadingNextPage)
-            .catchError { (error: Error) -> Observable<PartialChange> in
+            .catchError { (error: Error) -> Observable<HomePartialChange> in
                     .just(.loadNextPageError(error: .init(from: error), searchTerm: query))
 
         }

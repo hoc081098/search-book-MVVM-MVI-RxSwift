@@ -22,6 +22,7 @@
 		455ADC202B0BA8BBC5B2522E /* Pods_Search_Book.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C992F43AFCA6576B1AF7D739 /* Pods_Search_Book.framework */; };
 		4D8E632F91C827BFBD67FF43 /* BookRepositoryImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D8E6E5D24463F0660D86982 /* BookRepositoryImpl.swift */; };
 		4D8E6E7B40B2761DFFF077AB /* Mappers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D8E612E7EB5DBE11FF36826 /* Mappers.swift */; };
+		8F0AC0AB2327E114009E5235 /* DetailContract.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F0AC0AA2327E114009E5235 /* DetailContract.swift */; };
 		8F3EDD5F232681E9000B356F /* ScopeFuncs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F3EDD5E232681E9000B356F /* ScopeFuncs.swift */; };
 		8F3EDD6123268249000B356F /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F3EDD6023268249000B356F /* Colors.swift */; };
 		8F3EDD632326857A000B356F /* FavoritedBooksRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F3EDD622326857A000B356F /* FavoritedBooksRepository.swift */; };
@@ -49,6 +50,7 @@
 		2E2191A722D5CBBE008A8CC9 /* BookApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookApi.swift; sourceTree = "<group>"; };
 		4D8E612E7EB5DBE11FF36826 /* Mappers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Mappers.swift; sourceTree = "<group>"; };
 		4D8E6E5D24463F0660D86982 /* BookRepositoryImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BookRepositoryImpl.swift; sourceTree = "<group>"; };
+		8F0AC0AA2327E114009E5235 /* DetailContract.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailContract.swift; sourceTree = "<group>"; };
 		8F3EDD5E232681E9000B356F /* ScopeFuncs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScopeFuncs.swift; sourceTree = "<group>"; };
 		8F3EDD6023268249000B356F /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		8F3EDD622326857A000B356F /* FavoritedBooksRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritedBooksRepository.swift; sourceTree = "<group>"; };
@@ -182,6 +184,7 @@
 			isa = PBXGroup;
 			children = (
 				8F7640882326099600F20543 /* DetailVC.swift */,
+				8F0AC0AA2327E114009E5235 /* DetailContract.swift */,
 			);
 			path = Detail;
 			sourceTree = "<group>";
@@ -343,6 +346,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8F0AC0AB2327E114009E5235 /* DetailContract.swift in Sources */,
 				2E08414122D3462B00EA0BA8 /* HomeVM.swift in Sources */,
 				2E08414322D346F200EA0BA8 /* MviVM.swift in Sources */,
 				2E2191A022D5CAA0008A8CC9 /* Book.swift in Sources */,
