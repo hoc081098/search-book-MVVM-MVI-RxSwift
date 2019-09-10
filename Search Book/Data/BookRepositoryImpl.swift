@@ -24,6 +24,13 @@ class BookRepositoryImpl: BookRepository {
                     return .error(AppError.serverResponseError(error.code, error.message))
                 }
             }
+            .catchError { (error: Error) -> Single<[Book]> in
+                if (error as NSError).code == NSURLErrorNotConnectedToInternet {
+                    return .error(AppError.networkError(error))
+                } else {
+                    return .error(error)
+                }
+            }
     }
 
     func getBookBy(id: String, with: CachePolicy) -> Observable<Book> {
