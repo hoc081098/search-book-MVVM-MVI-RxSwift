@@ -7,26 +7,31 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
 
 class DetailVC: UIViewController {
-    var a: A?
+    var detailVM: DetailVM!
+    var initialDetail: InitialBookDetail!
+
+    private let disposeBag = DisposeBag()
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
-        print("A=\(String(describing: a))")
+        self.bindVM()
     }
-    
 
-    /*
-    // MARK: - Navigation
+    private func bindVM() {
+        self.detailVM
+            .state$
+            .drive(onNext: { state in
+                print("State=\(state)")
+            })
+            .disposed(by: self.disposeBag)
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+        self.detailVM
+            .process(intent$: .just(.initial(initialDetail)))
+            .disposed(by: disposeBag)
     }
-    */
-
 }

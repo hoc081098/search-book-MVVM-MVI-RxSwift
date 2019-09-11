@@ -169,7 +169,8 @@ class HomeVC: UIViewController {
             }
             .subscribe(onNext: { book in
                 let storyboard = SwinjectStoryboard.create(name: "Main", bundle: nil)
-                let detailVC = storyboard.instantiateViewController(withIdentifier: "DetailVC")
+                let detailVC = (storyboard.instantiateViewController(withIdentifier: "DetailVC") as! DetailVC)
+                    .apply { $0.initialDetail = .init(fromHomeBook: book) }
                 self.navigationController?.pushViewController(detailVC, animated: true)
             })
             .disposed(by: disposeBag)

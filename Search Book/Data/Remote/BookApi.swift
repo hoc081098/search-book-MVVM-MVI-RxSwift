@@ -22,7 +22,17 @@ class BookApi {
                 ]
             )
             .expectingObject(ofType: BooksResponse.self)
-            .asSingle();
+            .asSingle()
+    }
+    
+    func getBookDetailBy(id: String) -> Single<ApiResult<ApiErrorMessage, BookResponse>> {
+        return RxAlamofire
+            .requestData(
+                .get,
+                "https://www.googleapis.com/books/v1/volumes/\(id)"
+            )
+            .expectingObject(ofType: BookResponse.self)
+            .asSingle()
     }
 }
 

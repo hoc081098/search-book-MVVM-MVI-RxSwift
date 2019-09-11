@@ -11,7 +11,7 @@ import RxSwift
 
 // MARK: - Intent
 enum DetailIntent {
-    case initial
+    case initial(InitialBookDetail)
     case refresh
     case toggleFavorite(BookDetail)
 }
@@ -19,42 +19,79 @@ enum DetailIntent {
 // MARK: - ViewState
 struct DetailViewState: Equatable {
     let isLoading: Bool
+    let isRefreshing: Bool
     let error: DetailError?
-    let detail: BookDetail
+    let detail: BookDetail?
 
     func copyWith(
         isLoading: Bool? = nil,
+        isRefreshing: Bool? = nil,
         error: DetailError? = nil,
         detail: BookDetail? = nil
     ) -> DetailViewState {
         return DetailViewState(
             isLoading: isLoading ?? self.isLoading,
+            isRefreshing: isRefreshing ?? self.isRefreshing,
             error: error,
-            detail: detail ?? self.detail
+            detail: detail
         )
     }
 }
 
-protocol BookDetailType {
-    var id: String { get }
+struct InitialBookDetail: Equatable {
+    let id: String
+    let title: String?
+    let subtitle: String?
+    let thumbnail: String?
+    let isFavorited: Bool?
 }
 
-enum BookDetail: BookDetailType, Equatable {
-    var id: String {
-        switch self {
-        case .initial(let id):
-            return id
-        case .loaded(let id):
-            return id
-        }
+extension InitialBookDetail {
+    init(fromHomeBook b: HomeBook) {
+        self.id = b.id
+        self.title = b.title
+        self.subtitle = b.subtitle
+        self.thumbnail = b.thumbnail
+        self.isFavorited = b.isFavorited
+    }
+}
+
+struct BookDetail: Equatable {
+    let id: String
+    let title: String?
+    let subtitle: String?
+    let authors: [String]?
+    let thumbnail: String?
+    let largeImage: String?
+    let description: String?
+    let publishedDate: String?
+    let isFavorited: Bool?
+}
+
+extension BookDetail {
+    init(fromDomain b: Book) {
+        self.id = b.id
+        self.title = b.title
+        self.subtitle = b.subtitle
+        self.authors = b.authors
+        self.thumbnail = b.thumbnail
+        self.largeImage = b.largeImage
+        self.description = b.description
+        self.publishedDate = b.publishedDate
+        self.isFavorited = nil
     }
 
-    case initial(
-        id: String
-    )
-    case loaded(
-        id: String
-    )
+    init(fromInitial b: InitialBookDetail) {
+        self.id = b.id
+        self.title = b.title
+        self.subtitle = b.subtitle
+        self.authors = nil
+        self.thumbnail = b.thumbnail
+        self.largeImage = nil
+        self.description = nil
+        self.publishedDate = nil
+        self.isFavorited = nil
+    }
 }
 
 enum DetailError: Equatable {
@@ -89,9 +126,18 @@ enum DetailSingleEvent {
 // MARK: - Partial Change
 enum DetailPartialChange {
 
+    case refreshing
+    case refreshError(DetailError)
+
+    case initialLoaded(InitialBookDetail)
+    case detailLoaded(BookDetail)
+
+    case loading
+    case detailError(DetailError)
 }
 
 // MARK: - Interactor
 protocol DetailInteractor {
-
+    func refresh(id: String) -> Observable<DetailPartialChange>
+    func getDetailBy(id: String) -> Observable<DetailPartialChange>
 }

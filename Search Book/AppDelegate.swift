@@ -10,20 +10,6 @@ import UIKit
 import SwinjectStoryboard
 import SwinjectAutoregistration
 
-class A {
-    static var count = 0
-    let a: BookApi
-    init(a: BookApi) {
-        self.a = a
-        print("A::init \(A.count)")
-        A.count += 1
-    }
-    
-    deinit {
-        print("A::deini \(A.count-1)")
-    }
-}
-
 extension SwinjectStoryboard {
     @objc class func setup() {
         let container = self.defaultContainer
@@ -34,7 +20,7 @@ extension SwinjectStoryboard {
             controller.homeVM = resolver ~> HomeVM.self
         }
         container.storyboardInitCompleted(DetailVC.self) { resolver, controller in
-            controller.a = resolver ~> A.self
+            controller.detailVM = resolver ~> DetailVM.self
         }
 
         // MARK: - Data
@@ -70,7 +56,13 @@ extension SwinjectStoryboard {
 
         container.autoregister(HomeVM.self, initializer: HomeVM.init(homeInteractor:))
 
-        container.autoregister(A.self, initializer: A.init(a:))
+        container
+            .register(DetailInteractor.self) { resolver in
+                DetailInteractorImpl(bookRepository: resolver ~> BookRepository.self)
+            }
+            .inObjectScope(.container)
+
+        container.autoregister(DetailVM.self, initializer: DetailVM.init(detailInteractor:))
     }
 }
 
