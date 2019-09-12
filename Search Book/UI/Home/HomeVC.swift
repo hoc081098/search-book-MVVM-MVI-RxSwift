@@ -109,6 +109,8 @@ class HomeVC: UIViewController {
     private let intentS = PublishRelay<HomeIntent>()
 
     @IBOutlet weak var tableView: UITableView!
+    private var fabY: CGFloat?
+    private weak var fab: MDCFloatingButton?
     private weak var labelFavCount: UILabel?
 
     private lazy var searchBar: UISearchBar = {
@@ -127,7 +129,7 @@ class HomeVC: UIViewController {
 
         bindVM()
     }
-    
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         self.addFab()
@@ -200,11 +202,27 @@ class HomeVC: UIViewController {
             }
             .drive(self.tableView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
-        
+
         homeVM
             .state$
             .map { String($0.favCount) }
-            .drive(onNext: { self.labelFavCount?.text = $0 })
+            .distinctUntilChanged()
+            .startWith("0")
+            .drive(onNext: { count in
+                let animation = CAKeyframeAnimation(keyPath: "transform.scale").apply {
+                    $0.values = [1.0, 1.2, 0.9, 1.0]
+                    $0.keyTimes = [0, 0.2, 0.4, 1]
+                    $0.duration = 0.8
+                    $0.repeatCount = 1
+                    $0.isRemovedOnCompletion = true
+                }
+
+                self.labelFavCount.map {
+                    $0.layer.removeAnimation(forKey: "pulse")
+                    $0.text = count
+                    $0.layer.add(animation, forKey: "pulse")
+                }
+            })
             .disposed(by: disposeBag)
 
         homeVM
@@ -233,6 +251,30 @@ class HomeVC: UIViewController {
 
                         $0.text = "Loaded error: \(errorMessage)"
                     }
+
+                    $0.completionHandler = { _ in
+                        if let fabY = self.fabY, let fab = self.fab {
+                            UIView.animate(withDuration: 0.3, animations: {
+                                fab.frame = CGRect.init(
+                                    x: fab.frame.minX,
+                                    y: fabY + 54,
+                                    width: fab.frame.width,
+                                    height: fab.frame.height)
+                            })
+                            self.fabY = fabY + 54
+                        }
+                    }
+                }
+
+                if let fabY = self.fabY, let fab = self.fab {
+                    UIView.animate(withDuration: 0.3, animations: {
+                        fab.frame = CGRect.init(
+                            x: fab.frame.minX,
+                            y: fabY - 54,
+                            width: fab.frame.width,
+                            height: fab.frame.height)
+                    })
+                    self.fabY = fabY - 54
                 }
                 MDCSnackbarManager.show(message)
             })
@@ -260,21 +302,22 @@ class HomeVC: UIViewController {
             )
             .disposed(by: disposeBag)
     }
-    
+
     func addFab() {
         guard self.labelFavCount == nil else { return }
-        
+
         let fabSize = CGFloat(64)
         let fabMarginBottom = CGFloat(24)
         let fabMarginRight = CGFloat(12)
-        
+        let fabY = self.view.frame.height - fabSize - self.view.safeAreaInsets.bottom - fabMarginBottom
+
         let frame = CGRect(
             x: self.view.frame.width - fabSize - fabMarginRight,
-            y: self.view.frame.height - fabSize - self.view.safeAreaInsets.bottom - fabMarginBottom,
+            y: fabY,
             width: fabSize,
             height: fabSize
         )
-        
+
         let button = MDCFloatingButton.init(frame: frame).apply {
             $0.setElevation(ShadowElevation(rawValue: 8), for: .normal)
             $0.setElevation(ShadowElevation(rawValue: 12), for: .highlighted)
@@ -283,8 +326,8 @@ class HomeVC: UIViewController {
             $0.backgroundColor = Colors.tintColor
             $0.setShadowColor(UIColor.black.withAlphaComponent(0.87), for: .normal)
         }
-        
-        let labelFavCount = UILabel().apply{
+
+        let labelFavCount = UILabel().apply {
             $0.frame = CGRect.init(
                 x: frame.width - 32,
                 y: -8,
@@ -295,21 +338,23 @@ class HomeVC: UIViewController {
             $0.textColor = .white
             $0.textAlignment = .center
             $0.font = UIFont.init(name: "Thonburi-Bold", size: 15)
-            
+
             $0.clipsToBounds = true
             $0.layer.cornerRadius = 16
             $0.layer.shadowColor = UIColor.black.withAlphaComponent(0.24).cgColor
             $0.layer.shadowOpacity = 1
             $0.layer.shadowOffset = .init(width: 0, height: 10)
             $0.layer.shadowPath = UIBezierPath(rect: $0.bounds).cgPath
-            
+
             $0.backgroundColor = .red
         }
-        
+
         button.addSubview(labelFavCount)
 
         self.view.addSubview(button)
         self.labelFavCount = labelFavCount
+        self.fabY = fabY
+        self.fab = button
     }
 }
 
