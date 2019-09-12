@@ -345,6 +345,21 @@
             </objects>
             <point key="canvasLocation" x="2220" y="-1019.640179910045"/>
         </scene>
+        <!--FavoritesVC-->
+        <scene sceneID="RL5-W7-Zp6">
+            <objects>
+                <viewController storyboardIdentifier="FavoritesVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="Nse-Yd-jLW" customClass="FavoritesVC" customModule="Search_Book" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="nkV-gy-wEH">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="N41-D2-Ums"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="b7a-FI-Gju" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3128" y="-1004"/>
+        </scene>
         <!--Navigation Controller-->
         <scene sceneID="c2x-cZ-der">
             <objects>

@@ -350,11 +350,18 @@ class HomeVC: UIViewController {
         }
 
         button.addSubview(labelFavCount)
+        button.addTarget(self, action: #selector(tappedFabButton), for: .touchUpInside)
 
         self.view.addSubview(button)
         self.labelFavCount = labelFavCount
         self.fabY = fabY
         self.fab = button
+    }
+
+    @objc private func tappedFabButton() {
+        let storyboard = SwinjectStoryboard.create(name: "Main", bundle: nil)
+        let favoritesVC = (storyboard.instantiateViewController(withIdentifier: "FavoritesVC") as! FavoritesVC)
+        self.navigationController?.pushViewController(favoritesVC, animated: true)
     }
 }
 

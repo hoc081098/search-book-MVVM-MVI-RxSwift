@@ -25,6 +25,7 @@
 		8F0AC0AB2327E114009E5235 /* DetailContract.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F0AC0AA2327E114009E5235 /* DetailContract.swift */; };
 		8F0AC0AD2327E4E5009E5235 /* DetailVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F0AC0AC2327E4E5009E5235 /* DetailVM.swift */; };
 		8F0B89982329E73D00B7950B /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F0B89972329E73D00B7950B /* String+Extension.swift */; };
+		8F257B9D232A6A3600DD8EEA /* FavoritesVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F257B9C232A6A3600DD8EEA /* FavoritesVC.swift */; };
 		8F3EDD5F232681E9000B356F /* ScopeFuncs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F3EDD5E232681E9000B356F /* ScopeFuncs.swift */; };
 		8F3EDD6123268249000B356F /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F3EDD6023268249000B356F /* Colors.swift */; };
 		8F3EDD632326857A000B356F /* FavoritedBooksRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F3EDD622326857A000B356F /* FavoritedBooksRepository.swift */; };
@@ -56,6 +57,7 @@
 		8F0AC0AA2327E114009E5235 /* DetailContract.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailContract.swift; sourceTree = "<group>"; };
 		8F0AC0AC2327E4E5009E5235 /* DetailVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailVM.swift; sourceTree = "<group>"; };
 		8F0B89972329E73D00B7950B /* String+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extension.swift"; sourceTree = "<group>"; };
+		8F257B9C232A6A3600DD8EEA /* FavoritesVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesVC.swift; sourceTree = "<group>"; };
 		8F3EDD5E232681E9000B356F /* ScopeFuncs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScopeFuncs.swift; sourceTree = "<group>"; };
 		8F3EDD6023268249000B356F /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		8F3EDD622326857A000B356F /* FavoritedBooksRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritedBooksRepository.swift; sourceTree = "<group>"; };
@@ -168,6 +170,14 @@
 			path = Remote;
 			sourceTree = "<group>";
 		};
+		8F257B9B232A6A0900DD8EEA /* Favorites */ = {
+			isa = PBXGroup;
+			children = (
+				8F257B9C232A6A3600DD8EEA /* FavoritesVC.swift */,
+			);
+			path = Favorites;
+			sourceTree = "<group>";
+		};
 		8F3EDD5D232681D7000B356F /* Util */ = {
 			isa = PBXGroup;
 			children = (
@@ -181,6 +191,7 @@
 		8F5D283E2325546B0050F748 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				8F257B9B232A6A0900DD8EEA /* Favorites */,
 				8F7640872326097900F20543 /* Detail */,
 				2E08413F22D3452C00EA0BA8 /* Home */,
 			);
@@ -369,6 +380,7 @@
 				2E21919D22D5C285008A8CC9 /* HomeContract.swift in Sources */,
 				8F3EDD5F232681E9000B356F /* ScopeFuncs.swift in Sources */,
 				8F3EDD65232686AA000B356F /* FavoritedBooksRepositoryImpl.swift in Sources */,
+				8F257B9D232A6A3600DD8EEA /* FavoritesVC.swift in Sources */,
 				2E08413022D33EC700EA0BA8 /* HomeVC.swift in Sources */,
 				8F7640892326099600F20543 /* DetailVC.swift in Sources */,
 				8F0AC0AD2327E4E5009E5235 /* DetailVM.swift in Sources */,
