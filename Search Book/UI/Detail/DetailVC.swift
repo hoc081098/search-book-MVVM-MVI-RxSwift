@@ -22,17 +22,29 @@ class DetailVC: UIViewController {
 
     @IBOutlet weak var imageThumbnail: UIImageView!
     @IBOutlet weak var cardView: UIView!
+    @IBOutlet weak var labelTitle: UILabel!
+    @IBOutlet weak var labelSubtitle: UILabel!
+
+    @IBOutlet weak var labelPublishedDate: UILabel!
+    @IBOutlet weak var labelAuthors: UILabel!
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        self.cardView.backgroundColor = UIColor.black.withAlphaComponent(0.4)
+
+        let blurEffect = UIBlurEffect(style: .light)
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        blurEffectView.frame = self.cardView.bounds
+        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        blurEffectView.alpha = 0.5
+        self.cardView.insertSubview(blurEffectView, at: 0)
+
+        self.cardView.backgroundColor = .clear
         self.cardView.layer.cornerRadius = 12
-        self.cardView.layer.shadowColor = UIColor.black.withAlphaComponent(0.2).cgColor
+        self.cardView.layer.shadowColor = UIColor.black.withAlphaComponent(0.1).cgColor
         self.cardView.layer.shadowOpacity = 1
         self.cardView.layer.shadowOffset = .init(width: 0, height: 10)
         self.cardView.layer.shadowRadius = 10
         self.cardView.layer.shadowPath = UIBezierPath(rect: self.cardView.bounds).cgPath
-        
+
         let color = self.view.backgroundColor!
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             let gradientLayer = CAGradientLayer().apply {
@@ -77,42 +89,49 @@ class DetailVC: UIViewController {
 
     fileprivate func loadLargeImage(_ vs: DetailViewState) {
         let url = URL.init(string: vs.detail?.largeImage ?? "")
-        
+
         let processor = DownsamplingImageProcessor(size: self.imageLarge.frame.size)
-        
+
         self.imageLarge.kf.indicatorType = .activity
         self.imageLarge.kf.setImage(
             with: url,
             placeholder: UIImage.init(named: "no_image.png"),
             options: [
-                .processor(processor),
-                .scaleFactor(UIScreen.main.scale),
-                .transition(.fade(1)),
-                .cacheOriginalImage
+                    .processor(processor),
+                    .scaleFactor(UIScreen.main.scale),
+                    .transition(.fade(1)),
+                    .cacheOriginalImage
             ]
         )
     }
-    
+
     fileprivate func loadThumbnailImage(_ vs: DetailViewState) {
         let url = URL.init(string: vs.detail?.thumbnail ?? "")
-        
+
         let processor = DownsamplingImageProcessor(size: self.imageThumbnail.frame.size) >> RoundCornerImageProcessor(cornerRadius: 12)
-        
+
         self.imageThumbnail.kf.indicatorType = .activity
         self.imageThumbnail.kf.setImage(
             with: url,
             placeholder: UIImage.init(named: "no_image.png"),
             options: [
-                .processor(processor),
-                .scaleFactor(UIScreen.main.scale),
-                .transition(.fade(1)),
-                .cacheOriginalImage
+                    .processor(processor),
+                    .scaleFactor(UIScreen.main.scale),
+                    .transition(.fade(1)),
+                    .cacheOriginalImage
             ]
         )
     }
-    
+
     private func render(_ vs: DetailViewState) {
         loadLargeImage(vs)
         loadThumbnailImage(vs)
+        self.labelTitle.text = vs.isLoading ? "Loading..." : (vs.detail?.title ?? "No title")
+        self.labelSubtitle.text = vs.isLoading ? "Loading" : (vs.detail?.subtitle ?? "No subtitle")
+
+        let authors = vs.isLoading ? "Loading..." : (vs.detail?.authors?.joined(separator: ", ") ?? "N/A")
+        self.labelAuthors.text = "Authors: \(authors)"
+        let publishedDate = vs.isLoading ? "Loading..." : (vs.detail?.publishedDate ?? "N/A")
+        self.labelPublishedDate.text = "PublishedDate: \(publishedDate)"
     }
 }
