@@ -26,6 +26,7 @@ class BookApi {
     }
     
     func getBookDetailBy(id: String) -> Single<ApiResult<ApiErrorMessage, BookResponse>> {
+        print("BookApi::getBookDetailBy \(id)")
         return RxAlamofire
             .requestData(
                 .get,

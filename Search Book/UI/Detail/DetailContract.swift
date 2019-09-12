@@ -13,7 +13,7 @@ import RxSwift
 enum DetailIntent {
     case initial(InitialBookDetail)
     case refresh
-    case toggleFavorite(BookDetail)
+    case toggleFavorite
 }
 
 // MARK: - ViewState
@@ -33,7 +33,7 @@ struct DetailViewState: Equatable {
             isLoading: isLoading ?? self.isLoading,
             isRefreshing: isRefreshing ?? self.isRefreshing,
             error: error,
-            detail: detail
+            detail: detail ?? self.detail
         )
     }
 }
@@ -92,6 +92,32 @@ extension BookDetail {
         self.publishedDate = nil
         self.isFavorited = nil
     }
+
+    func withFavorited(_ isFavorited: Bool) -> BookDetail {
+        return BookDetail.init(id: id,
+            title: title,
+            subtitle: subtitle,
+            authors: authors,
+            thumbnail: thumbnail,
+            largeImage: largeImage,
+            description: description,
+            publishedDate: publishedDate,
+            isFavorited: isFavorited
+        )
+    }
+
+    func toDomain() -> Book {
+        return Book(
+            id: id,
+            title: title,
+            subtitle: subtitle,
+            authors: authors,
+            thumbnail: thumbnail,
+            largeImage: largeImage,
+            description: description,
+            publishedDate: publishedDate
+        )
+    }
 }
 
 enum DetailError: Equatable {
@@ -120,7 +146,13 @@ extension DetailError {
 
 // MARK: - Event
 enum DetailSingleEvent {
-
+    case addedToFavorited(BookDetail)
+    case removedFromFavorited(BookDetail)
+    
+    case refreshSuccess
+    case refreshError(DetailError)
+    
+    case getDetailError(DetailError)
 }
 
 // MARK: - Partial Change
@@ -128,16 +160,38 @@ enum DetailPartialChange {
 
     case refreshing
     case refreshError(DetailError)
+    case refreshSuccess(BookDetail)
 
     case initialLoaded(InitialBookDetail)
-    case detailLoaded(BookDetail)
-
     case loading
+    case detailLoaded(BookDetail)
     case detailError(DetailError)
+
+    var name: String {
+        switch self {
+
+        case .refreshing:
+            return "refreshing"
+        case .refreshError(_):
+            return "refreshError"
+        case .initialLoaded(_):
+            return "initialLoaded"
+        case .detailLoaded(_):
+            return "detailLoaded"
+        case .loading:
+            return "loading"
+        case .detailError(_):
+            return "detailError"
+        case .refreshSuccess:
+            return "refreshSuccess"
+        }
+    }
 }
 
 // MARK: - Interactor
 protocol DetailInteractor {
     func refresh(id: String) -> Observable<DetailPartialChange>
     func getDetailBy(id: String) -> Observable<DetailPartialChange>
+    func favoritedIds() -> Observable<Set<String>>
+    func toggleFavorited(detail: BookDetail) -> Single<DetailSingleEvent>
 }

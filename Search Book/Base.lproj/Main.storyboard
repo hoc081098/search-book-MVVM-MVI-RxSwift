@@ -191,7 +191,7 @@
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cFy-6m-Yyt">
                                                 <rect key="frame" x="0.0" y="0.0" width="375" height="647"/>
                                                 <subviews>
-                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="uKA-iM-XWC">
+                                                    <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="uKA-iM-XWC">
                                                         <rect key="frame" x="8" y="8" width="359" height="374"/>
                                                         <subviews>
                                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="dNs-rx-kHV">
@@ -202,19 +202,19 @@
                                                                     <constraint firstAttribute="width" constant="160" id="z7S-9A-gk9"/>
                                                                 </constraints>
                                                             </imageView>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Mhu-X4-arh">
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Mhu-X4-arh">
                                                                 <rect key="frame" x="8" y="268" width="343" height="24"/>
                                                                 <fontDescription key="fontDescription" name="Thonburi" family="Thonburi" pointSize="18"/>
                                                                 <nil key="textColor"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YV4-4f-9KU">
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YV4-4f-9KU">
                                                                 <rect key="frame" x="8" y="300" width="343" height="18.5"/>
                                                                 <fontDescription key="fontDescription" name="Thonburi" family="Thonburi" pointSize="14"/>
                                                                 <nil key="textColor"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
-                                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GxM-u5-Zmy" userLabel="Divider">
+                                                            <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GxM-u5-Zmy" userLabel="Divider">
                                                                 <rect key="frame" x="51.5" y="330.5" width="256" height="1"/>
                                                                 <color key="backgroundColor" red="0.94235390419999998" green="0.4128730893" blue="0.3355879188" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                 <constraints>
@@ -222,13 +222,13 @@
                                                                     <constraint firstAttribute="height" constant="1" id="e52-5Q-kc3"/>
                                                                 </constraints>
                                                             </view>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GMq-1z-7qp">
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GMq-1z-7qp">
                                                                 <rect key="frame" x="8" y="343.5" width="167.5" height="18.5"/>
                                                                 <fontDescription key="fontDescription" name="Thonburi" family="Thonburi" pointSize="14"/>
                                                                 <nil key="textColor"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="x2H-qv-U1i">
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="x2H-qv-U1i">
                                                                 <rect key="frame" x="183.5" y="343.5" width="167.5" height="18.5"/>
                                                                 <fontDescription key="fontDescription" name="Thonburi" family="Thonburi" pointSize="14"/>
                                                                 <nil key="textColor"/>
@@ -257,12 +257,40 @@
                                                             <constraint firstAttribute="trailing" secondItem="YV4-4f-9KU" secondAttribute="trailing" constant="8" id="md5-Hg-ynJ"/>
                                                         </constraints>
                                                     </view>
+                                                    <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PvA-gc-OXI" userLabel="Divider">
+                                                        <rect key="frame" x="8" y="426" width="54" height="1.5"/>
+                                                        <color key="backgroundColor" red="0.94235390419999998" green="0.4128730893" blue="0.3355879188" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="height" constant="1.5" id="tTi-lI-Lze"/>
+                                                            <constraint firstAttribute="width" constant="54" id="wbo-bZ-gAq"/>
+                                                        </constraints>
+                                                    </view>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Description" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NKD-t3-hj1">
+                                                        <rect key="frame" x="8" y="398" width="81.5" height="20"/>
+                                                        <fontDescription key="fontDescription" name="Thonburi" family="Thonburi" pointSize="15"/>
+                                                        <nil key="textColor"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Description" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="n5K-Ae-aIX">
+                                                        <rect key="frame" x="8" y="443.5" width="359" height="20"/>
+                                                        <fontDescription key="fontDescription" name="Thonburi" family="Thonburi" pointSize="15"/>
+                                                        <nil key="textColor"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
                                                 </subviews>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <constraints>
                                                     <constraint firstAttribute="trailing" secondItem="uKA-iM-XWC" secondAttribute="trailing" constant="8" id="21t-3e-izt"/>
+                                                    <constraint firstItem="n5K-Ae-aIX" firstAttribute="top" secondItem="PvA-gc-OXI" secondAttribute="bottom" constant="16" id="6Jh-YT-SU1"/>
                                                     <constraint firstItem="uKA-iM-XWC" firstAttribute="top" secondItem="cFy-6m-Yyt" secondAttribute="top" constant="8" id="8ny-DM-jhc"/>
+                                                    <constraint firstItem="PvA-gc-OXI" firstAttribute="top" secondItem="NKD-t3-hj1" secondAttribute="bottom" constant="8" id="JM6-pi-WSi"/>
+                                                    <constraint firstItem="NKD-t3-hj1" firstAttribute="leading" secondItem="cFy-6m-Yyt" secondAttribute="leading" constant="8" id="V0f-YA-N5q"/>
                                                     <constraint firstItem="uKA-iM-XWC" firstAttribute="leading" secondItem="cFy-6m-Yyt" secondAttribute="leading" constant="8" id="cSx-dJ-YES"/>
+                                                    <constraint firstAttribute="bottom" secondItem="n5K-Ae-aIX" secondAttribute="bottom" constant="12" id="dni-mi-DdN"/>
+                                                    <constraint firstItem="n5K-Ae-aIX" firstAttribute="leading" secondItem="cFy-6m-Yyt" secondAttribute="leading" constant="8" id="qj7-ZQ-43M"/>
+                                                    <constraint firstItem="PvA-gc-OXI" firstAttribute="leading" secondItem="cFy-6m-Yyt" secondAttribute="leading" constant="8" id="rUr-Cz-O75"/>
+                                                    <constraint firstAttribute="trailing" secondItem="n5K-Ae-aIX" secondAttribute="trailing" constant="8" id="wgO-4Y-oo3"/>
+                                                    <constraint firstItem="NKD-t3-hj1" firstAttribute="top" secondItem="uKA-iM-XWC" secondAttribute="bottom" constant="16" id="zMk-Uu-EP0"/>
                                                 </constraints>
                                             </view>
                                         </subviews>
@@ -306,9 +334,11 @@
                         <outlet property="imageLarge" destination="7yq-o5-r5J" id="rsg-6S-T9D"/>
                         <outlet property="imageThumbnail" destination="dNs-rx-kHV" id="Xbf-AK-d5c"/>
                         <outlet property="labelAuthors" destination="GMq-1z-7qp" id="G8Z-fB-WHU"/>
+                        <outlet property="labelDescription" destination="n5K-Ae-aIX" id="aM9-cu-F59"/>
                         <outlet property="labelPublishedDate" destination="x2H-qv-U1i" id="Qnd-xm-qTK"/>
                         <outlet property="labelSubtitle" destination="YV4-4f-9KU" id="ZKO-cT-HOh"/>
                         <outlet property="labelTitle" destination="Mhu-X4-arh" id="PMg-BE-M1j"/>
+                        <outlet property="scrollView" destination="xaP-In-heq" id="pi0-Iz-pMT"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xTI-FN-wAk" userLabel="First Responder" sceneMemberID="firstResponder"/>

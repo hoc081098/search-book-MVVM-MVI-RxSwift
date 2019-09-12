@@ -14,6 +14,7 @@ target 'Search Book' do
   
   pod 'Kingfisher'
   pod 'MaterialComponents/Snackbar'
+  pod 'MaterialComponents/Buttons'
 
   pod 'Swinject'
   pod 'SwinjectStoryboard'

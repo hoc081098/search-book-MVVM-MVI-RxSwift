@@ -49,10 +49,17 @@ class DetailVM: MviViewModelType {
                 }
             }
             .take(1)
+            .do(onNext: { _ in print("Initial intent") })
             .flatMap {
                 detailInteractor.getDetailBy(id: $0.id)
                     .startWith(.initialLoaded($0))
+                    .do(onNext: { change in
+                        if case .detailError(let error) = change {
+                            self.singleEventS.accept(.getDetailError(error))
+                        }
+                    })
         }
+
 
         let refreshChange$ = self.intentS
             .filter { intent in
@@ -70,18 +77,68 @@ class DetailVM: MviViewModelType {
                     return .ignore
                 }
             }
+            .do(onNext: { _ in print("Refresh intent") })
             .flatMapFirst {
-                detailInteractor.refresh(id: $0)
+                detailInteractor
+                    .refresh(id: $0)
+                    .do(onNext: { change in
+                        switch change {
+                        case .refreshError(let error):
+                            self.singleEventS.accept(.refreshError(error))
+                        case .refreshSuccess(_):
+                            self.singleEventS.accept(.refreshSuccess)
+                        default: ()
+                        }
+                    })
         }
 
-        Observable.merge([refreshChange$, initialChange$])
+        let scannedState$ = Observable.merge([refreshChange$, initialChange$])
             .scan(DetailVM.initialState, accumulator: DetailVM.reducer)
+            .distinctUntilChanged()
+
+        Observable
+            .combineLatest(
+                scannedState$,
+                self.detailInteractor.favoritedIds()) { state, ids -> DetailViewState in
+                if let detail = state.detail {
+                    return state.copyWith(detail: detail.withFavorited(ids.contains(detail.id)))
+                } else {
+                    return state
+                }
+            }
+            .observeOn(MainScheduler.asyncInstance)
             .distinctUntilChanged()
             .bind(to: self.viewStateS)
             .disposed(by: self.disposeBag)
+
+        self
+            .intentS
+            .filter { (intent: DetailIntent) -> Bool in
+                if case .toggleFavorite = intent {
+                    return true
+                } else {
+                    return false
+                }
+            }
+            .withLatestFrom(self.viewStateS)
+            .filterMap { (state: DetailViewState) -> FilterMap<BookDetail> in
+                if let detail = state.detail {
+                    return .map(detail)
+                } else {
+                    return .ignore
+                }
+            }
+            .groupBy { $0.id }
+            .map { $0.throttle(0.5, scheduler: MainScheduler.instance) }
+            .flatMap { $0 }
+            .concatMap { self.detailInteractor.toggleFavorited(detail: $0) }
+            .subscribe(onNext: { self.singleEventS.accept($0) })
+            .disposed(by: disposeBag)
     }
 
     static func reducer(vs: DetailViewState, change: DetailPartialChange) -> DetailViewState {
+        print("Change=\(change.name)")
+
         switch change {
         case .refreshing:
             return vs.copyWith(isRefreshing: true)
@@ -91,7 +148,7 @@ class DetailVM: MviViewModelType {
             return vs.copyWith(
                 isLoading: false,
                 error: nil,
-                detail: .init(fromInitial: initial)
+                detail: vs.detail ?? .init(fromInitial: initial)
             )
         case .detailLoaded(let detail):
             return vs.copyWith(
@@ -105,6 +162,11 @@ class DetailVM: MviViewModelType {
             return vs.copyWith(
                 isLoading: false,
                 error: error
+            )
+        case .refreshSuccess(let detail):
+            return vs.copyWith(
+                isRefreshing: false,
+                detail: detail
             )
         }
     }

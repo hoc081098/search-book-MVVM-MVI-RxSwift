@@ -46,5 +46,6 @@ class FavoritedBooksRepositoryImpl: FavoritedBooksRepository {
             .observe([String].self, FavoritedBooksRepositoryImpl.favIdsKey)
             .distinctUntilChanged()
             .map { ids in Set(ids ?? []) }
+            .share(replay: 1, scope: .whileConnected)
     }
 }

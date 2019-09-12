@@ -58,7 +58,10 @@ extension SwinjectStoryboard {
 
         container
             .register(DetailInteractor.self) { resolver in
-                DetailInteractorImpl(bookRepository: resolver ~> BookRepository.self)
+                DetailInteractorImpl(
+                    bookRepository: resolver ~> BookRepository.self,
+                    favBookRepo: resolver ~> FavoritedBooksRepository.self
+                )
             }
             .inObjectScope(.container)
 

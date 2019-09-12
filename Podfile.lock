@@ -84,6 +84,7 @@ PODS:
 DEPENDENCIES:
   - Alamofire
   - Kingfisher
+  - MaterialComponents/Buttons
   - MaterialComponents/Snackbar
   - RxAlamofire
   - RxCocoa
@@ -127,6 +128,6 @@ SPEC CHECKSUMS:
   SwinjectAutoregistration: 93a908f7543c401b0c315305ac0ae501efdbce89
   SwinjectStoryboard: 32512ef16c2b0ff5b8f823b23539c4a50f6d3383
 
-PODFILE CHECKSUM: 8314b94e3d6317d1a853b910774561356dd48ccc
+PODFILE CHECKSUM: 8f04219a4667c483848886eaefa8007c975ba059
 
 COCOAPODS: 1.6.1
