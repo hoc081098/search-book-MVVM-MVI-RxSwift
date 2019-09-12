@@ -191,8 +191,8 @@
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cFy-6m-Yyt">
                                                 <rect key="frame" x="0.0" y="0.0" width="375" height="647"/>
                                                 <subviews>
-                                                    <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="uKA-iM-XWC">
-                                                        <rect key="frame" x="8" y="8" width="359" height="400"/>
+                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="uKA-iM-XWC">
+                                                        <rect key="frame" x="8" y="8" width="359" height="374"/>
                                                         <subviews>
                                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="dNs-rx-kHV">
                                                                 <rect key="frame" x="99.5" y="12" width="160" height="240"/>
@@ -202,20 +202,20 @@
                                                                     <constraint firstAttribute="width" constant="160" id="z7S-9A-gk9"/>
                                                                 </constraints>
                                                             </imageView>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Mhu-X4-arh">
-                                                                <rect key="frame" x="8" y="264" width="343" height="24"/>
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Mhu-X4-arh">
+                                                                <rect key="frame" x="8" y="268" width="343" height="24"/>
                                                                 <fontDescription key="fontDescription" name="Thonburi" family="Thonburi" pointSize="18"/>
                                                                 <nil key="textColor"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YV4-4f-9KU">
-                                                                <rect key="frame" x="8" y="296" width="343" height="18.5"/>
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YV4-4f-9KU">
+                                                                <rect key="frame" x="8" y="300" width="343" height="18.5"/>
                                                                 <fontDescription key="fontDescription" name="Thonburi" family="Thonburi" pointSize="14"/>
                                                                 <nil key="textColor"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
                                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GxM-u5-Zmy" userLabel="Divider">
-                                                                <rect key="frame" x="51.5" y="456.5" width="256" height="1"/>
+                                                                <rect key="frame" x="51.5" y="330.5" width="256" height="1"/>
                                                                 <color key="backgroundColor" red="0.94235390419999998" green="0.4128730893" blue="0.3355879188" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                 <constraints>
                                                                     <constraint firstAttribute="width" constant="256" id="8yN-V0-lGa"/>
@@ -223,13 +223,13 @@
                                                                 </constraints>
                                                             </view>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GMq-1z-7qp">
-                                                                <rect key="frame" x="8" y="469.5" width="167.5" height="18.5"/>
+                                                                <rect key="frame" x="8" y="343.5" width="167.5" height="18.5"/>
                                                                 <fontDescription key="fontDescription" name="Thonburi" family="Thonburi" pointSize="14"/>
                                                                 <nil key="textColor"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="x2H-qv-U1i">
-                                                                <rect key="frame" x="183.5" y="469.5" width="167.5" height="18.5"/>
+                                                                <rect key="frame" x="183.5" y="343.5" width="167.5" height="18.5"/>
                                                                 <fontDescription key="fontDescription" name="Thonburi" family="Thonburi" pointSize="14"/>
                                                                 <nil key="textColor"/>
                                                                 <nil key="highlightedColor"/>
@@ -237,7 +237,6 @@
                                                         </subviews>
                                                         <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.14225706335616439" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <constraints>
-                                                            <constraint firstAttribute="height" constant="500" id="AkL-BM-Cu3"/>
                                                             <constraint firstItem="GMq-1z-7qp" firstAttribute="height" secondItem="x2H-qv-U1i" secondAttribute="height" id="BkL-Tb-X5B"/>
                                                             <constraint firstItem="Mhu-X4-arh" firstAttribute="leading" secondItem="uKA-iM-XWC" secondAttribute="leading" constant="8" id="Ctv-x6-S0y"/>
                                                             <constraint firstItem="x2H-qv-U1i" firstAttribute="top" secondItem="GxM-u5-Zmy" secondAttribute="bottom" constant="12" id="DqZ-jw-umu"/>
