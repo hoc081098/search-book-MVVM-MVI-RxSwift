@@ -19,20 +19,24 @@ class FavoritedBooksRepositoryImpl: FavoritedBooksRepository {
     }
 
     func toggleFavorited(book: Book) -> ToggleFavoritedResult {
-        var ids = Set(userDefaults.stringArray(forKey: FavoritedBooksRepositoryImpl.favIdsKey) ?? [])
+        let ids = userDefaults.stringArray(forKey: FavoritedBooksRepositoryImpl.favIdsKey) ?? []
         let bookId = book.id
 
         if ids.contains(bookId) {
-            ids.remove(bookId)
-            userDefaults.set(Array(ids), forKey: FavoritedBooksRepositoryImpl.favIdsKey)
+            userDefaults.set(
+                ids.filter { $0 != book.id },
+                forKey: FavoritedBooksRepositoryImpl.favIdsKey
+            )
 
             return ToggleFavoritedResult(
                 added: false,
                 book: book
             )
         } else {
-            ids.insert(bookId)
-            userDefaults.set(Array(ids), forKey: FavoritedBooksRepositoryImpl.favIdsKey)
+            userDefaults.set(
+                ids + [book.id],
+                forKey: FavoritedBooksRepositoryImpl.favIdsKey
+            )
 
             return ToggleFavoritedResult(
                 added: true,
