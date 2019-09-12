@@ -15,7 +15,8 @@ class HomeVM: MviViewModelType {
     static let initialState = HomeViewState(
         searchTerm: "",
         items: [],
-        books: []
+        books: [],
+        favCount: 0
     )
 
     private let intentS = PublishRelay<HomeIntent>()
@@ -155,6 +156,7 @@ class HomeVM: MviViewModelType {
 
         Observable.combineLatest(
             Observable.merge(changes)
+                .startWith(.initial)
                 .observeOn(MainScheduler.asyncInstance)
                 .scan(HomeVM.initialState, accumulator: HomeVM.reducer)
                 .distinctUntilChanged(),
@@ -170,7 +172,11 @@ class HomeVM: MviViewModelType {
                     return item
                 }
             }
-            return state.copyWith(items: items, books: books)
+            return state.copyWith(
+                items: items,
+                books: books,
+                favCount: ids.count
+            )
         }
             .distinctUntilChanged()
             .bind(to: viewStateS)
@@ -229,6 +235,8 @@ class HomeVM: MviViewModelType {
                 items: vs.books.map { .book($0) }
                     + [.error(error, false)]
             )
+        case .initial:
+            return vs
         }
     }
 }

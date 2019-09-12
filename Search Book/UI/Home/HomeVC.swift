@@ -15,6 +15,7 @@ import RxSwiftExt
 import MaterialComponents.MaterialSnackbar
 import SwinjectStoryboard
 import Swinject
+import MaterialComponents.MaterialButtons
 
 class LoadingCell: UITableViewCell {
     @IBOutlet weak var indicator: UIActivityIndicatorView!
@@ -108,6 +109,7 @@ class HomeVC: UIViewController {
     private let intentS = PublishRelay<HomeIntent>()
 
     @IBOutlet weak var tableView: UITableView!
+    private weak var labelFavCount: UILabel?
 
     private lazy var searchBar: UISearchBar = {
         let searchBar = UISearchBar(frame: .zero)
@@ -124,6 +126,11 @@ class HomeVC: UIViewController {
         self.tableView.rowHeight = UITableView.automaticDimension
 
         bindVM()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        self.addFab()
     }
 
     private func bindVM() {
@@ -193,6 +200,12 @@ class HomeVC: UIViewController {
             }
             .drive(self.tableView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
+        
+        homeVM
+            .state$
+            .map { String($0.favCount) }
+            .drive(onNext: { self.labelFavCount?.text = $0 })
+            .disposed(by: disposeBag)
 
         homeVM
             .singleEvent$
@@ -246,6 +259,57 @@ class HomeVC: UIViewController {
                 )
             )
             .disposed(by: disposeBag)
+    }
+    
+    func addFab() {
+        guard self.labelFavCount == nil else { return }
+        
+        let fabSize = CGFloat(64)
+        let fabMarginBottom = CGFloat(24)
+        let fabMarginRight = CGFloat(12)
+        
+        let frame = CGRect(
+            x: self.view.frame.width - fabSize - fabMarginRight,
+            y: self.view.frame.height - fabSize - self.view.safeAreaInsets.bottom - fabMarginBottom,
+            width: fabSize,
+            height: fabSize
+        )
+        
+        let button = MDCFloatingButton.init(frame: frame).apply {
+            $0.setElevation(ShadowElevation(rawValue: 8), for: .normal)
+            $0.setElevation(ShadowElevation(rawValue: 12), for: .highlighted)
+            $0.tintColor = .white
+            $0.setImage(UIImage(named: "baseline_favorite_white_36pt"), for: .normal)
+            $0.backgroundColor = Colors.tintColor
+            $0.setShadowColor(UIColor.black.withAlphaComponent(0.87), for: .normal)
+        }
+        
+        let labelFavCount = UILabel().apply{
+            $0.frame = CGRect.init(
+                x: frame.width - 32,
+                y: -8,
+                width: 32,
+                height: 32
+            )
+            $0.text = "0"
+            $0.textColor = .white
+            $0.textAlignment = .center
+            $0.font = UIFont.init(name: "Thonburi-Bold", size: 15)
+            
+            $0.clipsToBounds = true
+            $0.layer.cornerRadius = 16
+            $0.layer.shadowColor = UIColor.black.withAlphaComponent(0.24).cgColor
+            $0.layer.shadowOpacity = 1
+            $0.layer.shadowOffset = .init(width: 0, height: 10)
+            $0.layer.shadowPath = UIBezierPath(rect: $0.bounds).cgPath
+            
+            $0.backgroundColor = .red
+        }
+        
+        button.addSubview(labelFavCount)
+
+        self.view.addSubview(button)
+        self.labelFavCount = labelFavCount
     }
 }
 

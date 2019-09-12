@@ -23,16 +23,19 @@ struct HomeViewState: Equatable {
     let searchTerm: String
     let items: [HomeItem]
     let books: [HomeBook]
+    let favCount: Int
 
     func copyWith(
         searchTerm: String? = nil,
         items: [HomeItem]? = nil,
-        books: [HomeBook]? = nil
+        books: [HomeBook]? = nil,
+        favCount: Int? = nil
     ) -> HomeViewState {
         return HomeViewState(
             searchTerm: searchTerm ?? self.searchTerm,
             items: items ?? self.items,
-            books: books ?? self.books
+            books: books ?? self.books,
+            favCount: favCount ?? self.favCount
         )
     }
 }
@@ -116,6 +119,8 @@ enum HomeSingleEvent {
 
 // MARK: - Partial Change
 enum HomePartialChange {
+    case initial
+    
     case loadingFirstPage
     case loadFirstPageError(error: HomeError, searchTerm: String)
     case firstPageLoaded(books: [HomeBook], searchTerm: String)
@@ -139,6 +144,8 @@ enum HomePartialChange {
                 return "nextPageLoaded"
             case .loadNextPageError:
                 return "loadNextPageError"
+            case .initial:
+                return "initial"
             }
         }
     }
