@@ -59,15 +59,15 @@ class DetailVC: UIViewController {
             .state$
             .drive(onNext: self.render)
             .disposed(by: self.disposeBag)
-        
+
         detailVM
             .singleEvent$
             .emit(onNext: { event in
                 print("Event=\(event)")
-                
+
                 let message = MDCSnackbarMessage().apply {
                     $0.duration = 2
-                    
+
                     switch event {
                     case .addedToFavorited(let detail):
                         $0.text = "Added '\(detail.title ?? "")' to favorited"
@@ -78,7 +78,7 @@ class DetailVC: UIViewController {
                     case .refreshError(let error):
                         $0.text = "Refesh error: \(self.getMessage(from: error))"
                     case .getDetailError(let error):
-                         $0.text = "Get detail error: \(self.getMessage(from: error))"
+                        $0.text = "Get detail error: \(self.getMessage(from: error))"
                     }
                 }
                 MDCSnackbarManager.show(message)
@@ -96,7 +96,7 @@ class DetailVC: UIViewController {
                     ]))
             .disposed(by: disposeBag)
     }
-    
+
     private func getMessage(from error: DetailError) -> String {
         switch error {
         case .networkError:
@@ -161,11 +161,17 @@ class DetailVC: UIViewController {
     }
 
     private func setFabIcon(_ vs: DetailViewState) {
-        if let fav = vs.detail?.isFavorited {
+        if let fav = vs.detail?.isFavorited, let fab = self.fab {
             let image = fav
                 ? UIImage(named: "baseline_favorite_white_36pt")
                 : UIImage(named: "baseline_favorite_border_white_36pt")
-            self.fab?.setImage(image, for: .normal)
+           
+            UIView.transition(
+                with: fab,
+                duration: 0.4,
+                options: .transitionCrossDissolve,
+                animations: { fab.setImage(image, for: .normal) }
+            )
         }
     }
 
@@ -245,7 +251,7 @@ private extension DetailVC {
             $0.backgroundColor = Colors.tintColor
             $0.setShadowColor(UIColor.black.withAlphaComponent(0.13), for: .normal)
         }
-        
+
         button.rx
             .tap
             .map { .toggleFavorite }

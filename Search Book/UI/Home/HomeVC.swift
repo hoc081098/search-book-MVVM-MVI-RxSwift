@@ -88,17 +88,22 @@ class HomeCell: UITableViewCell {
 
         self.labelTitle.text = "\(row) - \(book.title ?? "No title")"
         self.labelSubtitle.text = book.subtitle ?? "No subtitle"
-        
-        self.imageFav.image = book.isFavorited.flatMap { (fav: Bool) -> UIImage? in
+
+        let newImage = book.isFavorited.flatMap { (fav: Bool) -> UIImage? in
             return fav ? UIImage(named: "baseline_favorite_white_36pt") : UIImage(named: "baseline_favorite_border_white_36pt")
         }
+        UIView.transition(
+            with: self.imageFav,
+            duration: 0.4,
+            options: .transitionCrossDissolve,
+            animations: { self.imageFav.image = newImage })
     }
 }
 
 class HomeVC: UIViewController {
     var homeVM: HomeVM!
-    
-    
+
+
     private let disposeBag = DisposeBag()
     private let intentS = PublishRelay<HomeIntent>()
 
@@ -188,12 +193,12 @@ class HomeVC: UIViewController {
             }
             .drive(self.tableView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
-        
+
         homeVM
             .singleEvent$
             .emit(onNext: { event in
                 print("Event=\(event)")
-                
+
                 let message = MDCSnackbarMessage().apply {
                     $0.duration = 2
                     switch event {
@@ -203,7 +208,7 @@ class HomeVC: UIViewController {
                         $0.text = "Removed '\(book.title ?? "")' from favorited"
                     case .loadError(let error):
                         let errorMessage: String
-                        
+
                         switch error {
                         case .networkError:
                             errorMessage = "Network error"
@@ -212,7 +217,7 @@ class HomeVC: UIViewController {
                         case .unexpectedError:
                             errorMessage = "Unexpected error"
                         }
-                        
+
                         $0.text = "Loaded error: \(errorMessage)"
                     }
                 }
