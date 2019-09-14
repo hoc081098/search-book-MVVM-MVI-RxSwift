@@ -11,7 +11,6 @@ import Foundation
 import Foundation
 import RxSwift
 import RxCocoa
-import RxSwiftExt
 
 class DetailVM: MviViewModelType {
     static let initialState = DetailViewState(
@@ -41,11 +40,11 @@ class DetailVM: MviViewModelType {
         self.state$ = viewStateS.asDriver()
 
         let initialChange$ = self.intentS
-            .filterMap { (intent) -> FilterMap<InitialBookDetail> in
+            .compactMap { (intent) -> InitialBookDetail? in
                 if case .initial(let initialDetail) = intent {
-                    return .map(initialDetail)
+                    return initialDetail
                 } else {
-                    return .ignore
+                    return nil
                 }
             }
             .take(1)
@@ -70,11 +69,11 @@ class DetailVM: MviViewModelType {
                 }
             }
             .withLatestFrom(self.viewStateS)
-            .filterMap { (state) -> FilterMap<String> in
+            .compactMap { (state) -> String? in
                 if let id = state.detail?.id {
-                    return .map(id)
+                    return id
                 } else {
-                    return .ignore
+                    return nil
                 }
             }
             .do(onNext: { _ in print("Refresh intent") })
@@ -121,11 +120,11 @@ class DetailVM: MviViewModelType {
                 }
             }
             .withLatestFrom(self.viewStateS)
-            .filterMap { (state: DetailViewState) -> FilterMap<BookDetail> in
+            .compactMap { (state: DetailViewState) -> BookDetail? in
                 if let detail = state.detail {
-                    return .map(detail)
+                    return detail
                 } else {
-                    return .ignore
+                    return nil
                 }
             }
             .groupBy { $0.id }

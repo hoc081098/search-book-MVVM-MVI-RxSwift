@@ -11,7 +11,6 @@ import RxSwift
 import RxCocoa
 import Kingfisher
 import RxDataSources
-import RxSwiftExt
 import MaterialComponents.MaterialSnackbar
 import SwinjectStoryboard
 import Swinject
@@ -174,11 +173,11 @@ class HomeVC: UIViewController {
                 let section = dataSource.sectionModels[indexPath.section]
                 return section.items[indexPath.row]
             }
-            .filterMap { (item: HomeItem) -> FilterMap<HomeBook> in
+            .compactMap { (item: HomeItem) -> HomeBook? in
                 if case .book(let book) = item {
-                    return .map(book)
+                    return book
                 } else {
-                    return .ignore
+                    return nil
                 }
             }
             .subscribe(onNext: { book in

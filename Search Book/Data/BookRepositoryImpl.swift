@@ -5,7 +5,6 @@
 
 import Foundation
 import RxSwift
-import RxSwiftExt
 
 class BookRepositoryImpl: BookRepository {
     private let bookApi: BookApi

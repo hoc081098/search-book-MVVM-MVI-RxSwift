@@ -70,14 +70,6 @@ PODS:
   - RxRelay (5.0.0):
     - RxSwift (~> 5)
   - RxSwift (5.0.0)
-  - RxSwiftExt (5.0.0):
-    - RxSwiftExt/Core (= 5.0.0)
-    - RxSwiftExt/RxCocoa (= 5.0.0)
-  - RxSwiftExt/Core (5.0.0):
-    - RxSwift (~> 5.0)
-  - RxSwiftExt/RxCocoa (5.0.0):
-    - RxCocoa (~> 5.0)
-    - RxSwiftExt/Core
   - Swinject (2.6.2)
   - SwinjectAutoregistration (2.6.0):
     - Swinject (~> 2.6)
@@ -93,7 +85,6 @@ DEPENDENCIES:
   - RxCocoa (~> 5.0)
   - RxDataSources (~> 4.0)
   - RxSwift (~> 5.0)
-  - RxSwiftExt (~> 5.0)
   - Swinject
   - SwinjectAutoregistration
   - SwinjectStoryboard
@@ -111,7 +102,6 @@ SPEC REPOS:
     - RxDataSources
     - RxRelay
     - RxSwift
-    - RxSwiftExt
     - Swinject
     - SwinjectAutoregistration
     - SwinjectStoryboard
@@ -128,11 +118,10 @@ SPEC CHECKSUMS:
   RxDataSources: efee07fa4de48477eca0a4611e6d11e2da9c1114
   RxRelay: 4f7409406a51a55cd88483f21ed898c234d60f18
   RxSwift: 8b0671caa829a763bbce7271095859121cbd895f
-  RxSwiftExt: 4564187392cc53823ef241fa4a11647861567026
   Swinject: cf7458774b1b00323080a9c67e47a1ee7f9d2af1
   SwinjectAutoregistration: 93a908f7543c401b0c315305ac0ae501efdbce89
   SwinjectStoryboard: 32512ef16c2b0ff5b8f823b23539c4a50f6d3383
 
-PODFILE CHECKSUM: 324d58a06bbbeeb1db0613a111e5e1dc06f4e1a8
+PODFILE CHECKSUM: 6bc734a30132f8880c466b7f82035275972a9157
 
 COCOAPODS: 1.6.1

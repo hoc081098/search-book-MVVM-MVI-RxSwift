@@ -9,7 +9,6 @@
 import Foundation
 import RxSwift
 import RxCocoa
-import RxSwiftExt
 
 class HomeVM: MviViewModelType {
     static let initialState = HomeViewState(
@@ -39,11 +38,11 @@ class HomeVM: MviViewModelType {
         self.state$ = viewStateS.asDriver()
 
         let searchString$: Observable<String> = intentS
-            .filterMap { (intent: HomeIntent) -> FilterMap<String> in
+            .compactMap { (intent: HomeIntent) -> String? in
                 if case .search(let searchTerm) = intent {
-                    return .map(searchTerm)
+                    return searchTerm
                 } else {
-                    return .ignore
+                    return nil
                 }
             }
             .debounce(.milliseconds(500), scheduler: MainScheduler.instance)
@@ -70,11 +69,11 @@ class HomeVM: MviViewModelType {
                 }
             }
             .withLatestFrom(viewStateS)
-            .filterMap { (state: HomeViewState) -> FilterMap<Int> in
+            .compactMap { (state: HomeViewState) -> Int? in
                 if shouldLoadNextPage(state) {
-                    return .map(state.books.count)
+                    return state.books.count
                 } else {
-                    return .ignore
+                    return nil
                 }
             }
             .withLatestFrom(searchString$) { ($0, $1) }
@@ -119,11 +118,11 @@ class HomeVM: MviViewModelType {
                 }
             }
             .withLatestFrom(viewStateS)
-            .filterMap { (state: HomeViewState) -> FilterMap<Int> in
+            .compactMap { (state: HomeViewState) -> Int? in
                 if shouldRetryNextPage(state) {
-                    return .map(state.books.count)
+                    return state.books.count
                 } else {
-                    return .ignore
+                    return nil
                 }
             }
             .withLatestFrom(searchString$) { ($0, $1) }
@@ -183,11 +182,11 @@ class HomeVM: MviViewModelType {
             .disposed(by: disposeBag)
 
         intentS
-            .filterMap { (intent: HomeIntent) -> FilterMap<HomeBook> in
+            .compactMap { (intent: HomeIntent) -> HomeBook? in
                 if case .toggleFavorite(let book) = intent {
-                    return .map(book)
+                    return book
                 } else {
-                    return .ignore
+                    return nil
                 }
             }
             .groupBy { $0.id }
