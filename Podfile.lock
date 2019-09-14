@@ -1,6 +1,6 @@
 PODS:
   - Alamofire (4.8.2)
-  - Differentiator (3.1.0)
+  - Differentiator (4.0.1)
   - Kingfisher (5.7.0)
   - MaterialComponents/AnimationTiming (86.0.0)
   - MaterialComponents/Buttons (86.0.0):
@@ -55,25 +55,28 @@ PODS:
     - MaterialComponents/private/Math
   - MDFInternationalization (2.0.0)
   - MDFTextAccessibility (2.0.0)
-  - RxAlamofire (4.4.1):
-    - RxAlamofire/Core (= 4.4.1)
-  - RxAlamofire/Core (4.4.1):
+  - RxAlamofire (5.0.0):
+    - RxAlamofire/Core (= 5.0.0)
+  - RxAlamofire/Core (5.0.0):
     - Alamofire (~> 4.8)
-    - RxSwift (~> 4.5)
-  - RxCocoa (4.5.0):
-    - RxSwift (>= 4.4.2, ~> 4.4)
-  - RxDataSources (3.1.0):
-    - Differentiator (~> 3.0)
-    - RxCocoa (~> 4.0)
-    - RxSwift (~> 4.0)
-  - RxSwift (4.5.0)
-  - RxSwiftExt (3.4.0):
-    - RxSwiftExt/Core (= 3.4.0)
-    - RxSwiftExt/RxCocoa (= 3.4.0)
-  - RxSwiftExt/Core (3.4.0):
-    - RxSwift (~> 4.0)
-  - RxSwiftExt/RxCocoa (3.4.0):
-    - RxCocoa (~> 4.0)
+    - RxSwift (~> 5.0)
+  - RxCocoa (5.0.0):
+    - RxRelay (~> 5)
+    - RxSwift (~> 5)
+  - RxDataSources (4.0.1):
+    - Differentiator (~> 4.0)
+    - RxCocoa (~> 5.0)
+    - RxSwift (~> 5.0)
+  - RxRelay (5.0.0):
+    - RxSwift (~> 5)
+  - RxSwift (5.0.0)
+  - RxSwiftExt (5.0.0):
+    - RxSwiftExt/Core (= 5.0.0)
+    - RxSwiftExt/RxCocoa (= 5.0.0)
+  - RxSwiftExt/Core (5.0.0):
+    - RxSwift (~> 5.0)
+  - RxSwiftExt/RxCocoa (5.0.0):
+    - RxCocoa (~> 5.0)
     - RxSwiftExt/Core
   - Swinject (2.6.2)
   - SwinjectAutoregistration (2.6.0):
@@ -86,11 +89,11 @@ DEPENDENCIES:
   - Kingfisher
   - MaterialComponents/Buttons
   - MaterialComponents/Snackbar
-  - RxAlamofire
-  - RxCocoa
-  - RxDataSources
-  - RxSwift
-  - RxSwiftExt
+  - RxAlamofire (~> 5.0)
+  - RxCocoa (~> 5.0)
+  - RxDataSources (~> 4.0)
+  - RxSwift (~> 5.0)
+  - RxSwiftExt (~> 5.0)
   - Swinject
   - SwinjectAutoregistration
   - SwinjectStoryboard
@@ -106,6 +109,7 @@ SPEC REPOS:
     - RxAlamofire
     - RxCocoa
     - RxDataSources
+    - RxRelay
     - RxSwift
     - RxSwiftExt
     - Swinject
@@ -114,20 +118,21 @@ SPEC REPOS:
 
 SPEC CHECKSUMS:
   Alamofire: ae5c501addb7afdbb13687d7f2f722c78734c2d3
-  Differentiator: be49ca3408f0ecfc761e4c7763d20c62be01b9ad
+  Differentiator: 886080237d9f87f322641dedbc5be257061b0602
   Kingfisher: c7d211b54f1f30d8060aadab177d52b4349c825b
   MaterialComponents: 332e82f1b0976f137e5e5d1d261208df5dc1b67d
   MDFInternationalization: 010097556d6b09d2c4ea38e0820ea6d37be6a314
   MDFTextAccessibility: 85c09a1bd9c321f494348e632a25063bcda35a53
-  RxAlamofire: ed65f451f5a9a59419b0b9e705043dc01410edd9
-  RxCocoa: cbf70265dc65a981d4ac982e513c10cf23df24a0
-  RxDataSources: a843bad90c29817f5923ec8163f4af2de084ceb3
-  RxSwift: f172070dfd1a93d70a9ab97a5a01166206e1c575
-  RxSwiftExt: 01f8ecbeeb355698e9c75365ebe908b00dacf45d
+  RxAlamofire: e7875a012aff55345672d0f70a2a9cd6aeb0f211
+  RxCocoa: fcf32050ac00d801f34a7f71d5e8e7f23026dcd8
+  RxDataSources: efee07fa4de48477eca0a4611e6d11e2da9c1114
+  RxRelay: 4f7409406a51a55cd88483f21ed898c234d60f18
+  RxSwift: 8b0671caa829a763bbce7271095859121cbd895f
+  RxSwiftExt: 4564187392cc53823ef241fa4a11647861567026
   Swinject: cf7458774b1b00323080a9c67e47a1ee7f9d2af1
   SwinjectAutoregistration: 93a908f7543c401b0c315305ac0ae501efdbce89
   SwinjectStoryboard: 32512ef16c2b0ff5b8f823b23539c4a50f6d3383
 
-PODFILE CHECKSUM: 8f04219a4667c483848886eaefa8007c975ba059
+PODFILE CHECKSUM: 324d58a06bbbeeb1db0613a111e5e1dc06f4e1a8
 
 COCOAPODS: 1.6.1

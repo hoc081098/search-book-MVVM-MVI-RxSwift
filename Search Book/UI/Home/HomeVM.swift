@@ -46,7 +46,7 @@ class HomeVM: MviViewModelType {
                     return .ignore
                 }
             }
-            .debounce(0.5, scheduler: MainScheduler.instance)
+            .debounce(.milliseconds(500), scheduler: MainScheduler.instance)
             .distinctUntilChanged()
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .filter { !$0.isEmpty }
@@ -191,7 +191,7 @@ class HomeVM: MviViewModelType {
                 }
             }
             .groupBy { $0.id }
-            .map { $0.throttle(0.5, scheduler: MainScheduler.instance) }
+            .map { $0.throttle(.milliseconds(500), scheduler: MainScheduler.instance) }
             .flatMap { $0 }
             .concatMap { homeInteractor.toggleFavorited(book: $0) }
             .subscribe(onNext: { self.singleEventS.accept($0) })

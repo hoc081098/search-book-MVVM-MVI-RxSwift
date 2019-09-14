@@ -21,7 +21,7 @@ class DetailInteractorImpl: DetailInteractor {
     func refresh(id: String) -> Observable<DetailPartialChange> {
         return bookRepository
             .getBookBy(id: id, with: .localFirst)
-            .delay(2, scheduler: MainScheduler.instance)
+            .delay(.seconds(2), scheduler: MainScheduler.instance)
             .map(BookDetail.init(fromDomain:))
             .map { .refreshSuccess($0) }
             .startWith(.refreshing)

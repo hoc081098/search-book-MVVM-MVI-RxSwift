@@ -4,13 +4,13 @@ source 'https://github.com/CocoaPods/Specs.git'
 target 'Search Book' do
   use_frameworks!
   
-  pod 'RxSwift'
-  pod 'RxCocoa'
-  pod 'RxSwiftExt'
-  pod 'RxDataSources'
+  pod 'RxSwift', '~> 5.0'
+  pod 'RxCocoa', '~> 5.0'
+  pod 'RxSwiftExt', '~> 5.0'
+  pod 'RxDataSources', '~> 4.0'
   
   pod 'Alamofire'
-  pod 'RxAlamofire'
+  pod 'RxAlamofire', '~> 5.0'
   
   pod 'Kingfisher'
   pod 'MaterialComponents/Snackbar'

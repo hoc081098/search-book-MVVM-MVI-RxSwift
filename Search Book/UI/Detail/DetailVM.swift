@@ -129,7 +129,7 @@ class DetailVM: MviViewModelType {
                 }
             }
             .groupBy { $0.id }
-            .map { $0.throttle(0.5, scheduler: MainScheduler.instance) }
+            .map { $0.throttle(.milliseconds(500), scheduler: MainScheduler.instance) }
             .flatMap { $0 }
             .concatMap { self.detailInteractor.toggleFavorited(detail: $0) }
             .subscribe(onNext: { self.singleEventS.accept($0) })

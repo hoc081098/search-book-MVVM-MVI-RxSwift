@@ -291,7 +291,7 @@ class HomeVC: UIViewController {
                     tableView.rx
                         .contentOffset
                         .asObservable()
-                        .throttle(0.4, scheduler: MainScheduler.instance)
+                        .throttle(.milliseconds(400), scheduler: MainScheduler.instance)
                         .filter { _ in
                             self.tableView.isNearBottomEdge(edgeOffset: 30)
                         }
