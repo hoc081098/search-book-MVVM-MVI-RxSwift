@@ -14,7 +14,7 @@ import RxCocoa
 
 class FavoritesVM: MviViewModelType {
     static let initialState = FavoritesViewState(
-        books: []
+        books: nil
     )
 
     private let intentS = PublishRelay<FavoritesIntent>()
@@ -60,24 +60,54 @@ class FavoritesVM: MviViewModelType {
     }
 
     static func reducer(vs: FavoritesViewState, change: FavoritesPartialChange) -> FavoritesViewState {
+        print(change)
         switch change {
         case .bookLoaded(let book):
-            return vs.copyWith(books: replace(items: vs.books, by: book))
-        case .bookError(let error):
-            return vs.copyWith(books: replace(items: vs.books, by: error))
+            return vs.copyWith(books: replace(items: vs.books!, by: book))
+        case .bookError(let error, let id):
+            let books = vs.books!.map { book -> FavoritesItem in
+                if book.id == id {
+                    if book.isLoading {
+                        return book.copyWith(
+                            isLoading: false,
+                            error: error
+                        )
+                    } else {
+                        return book
+                    }
+                } else {
+                    return book
+                }
+            }
+            return vs.copyWith(books: books)
         case .refreshSuccess(let books):
-            <#code#>
+            return vs.copyWith(books: books)
         case .refreshError(let error):
-            <#code#>
-        @unknown default:
-            <#code#>
+            return vs
+        case .ids(let ids):
+            return vs.copyWith(books: vs.books ??
+                ids.map { id in
+                    FavoritesItem.init(
+                        isLoading: true,
+                        error: nil,
+                        id: id,
+                        title: nil,
+                        subtitle: nil,
+                        thumbnail: nil)
+                })
         }
     }
 
-    static func replace(items: [FavoritesItem], by newItem: FavoritesBook) -> [FavoritesItem]{
+    static func replace(items: [FavoritesItem], by newItem: FavoritesItem) -> [FavoritesItem] {
         return items.map { item in
-            if item.book?.id == newItem.id {
-                return item.copyWith(isLoading: false, error: nil, book: newItem)
+            if item.id == newItem.id {
+                return item.copyWith(
+                    isLoading: false,
+                    error: nil,
+                    title: newItem.title,
+                    subtitle: newItem.subtitle,
+                    thumbnail: newItem.thumbnail
+                )
             } else {
                 return item
             }

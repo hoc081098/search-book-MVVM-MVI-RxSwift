@@ -17,43 +17,49 @@ enum FavoritesIntent {
 
 // MARK: - View state
 struct FavoritesViewState: Equatable {
-    let books: [FavoritesItem]
-    func copyWith(books: [FavoritesItem]? = nil) -> FavoritesViewState {
-        return .init(books: books ?? self.books)
+    let books: [FavoritesItem]?
+
+    func copyWith(books: [FavoritesItem]) -> FavoritesViewState {
+        return .init(books: books)
     }
 }
 
 struct FavoritesItem: Equatable {
     let isLoading: Bool
     let error: FavoritesError?
-    let book: FavoritesBook?
 
-    func copyWith(
-        isLoading: Bool? = nil,
-        error: FavoritesError? = nil,
-        book: FavoritesBook? = nil
-    ) -> FavoritesItem {
-        return .init(
-            isLoading: isLoading ?? self.isLoading,
-            error: error,
-            book: book ?? self.book
-        )
-    }
-}
-
-struct FavoritesBook: Equatable {
     let id: String
     let title: String?
     let subtitle: String?
     let thumbnail: String?
+
+    func copyWith(
+        isLoading: Bool? = nil,
+        error: FavoritesError? = nil,
+        title: String? = nil,
+        subtitle: String? = nil,
+        thumbnail: String? = nil
+    ) -> FavoritesItem {
+        return .init(
+            isLoading: isLoading ?? self.isLoading,
+            error: error,
+            id: self.id,
+            title: title ?? self.title,
+            subtitle: subtitle ?? self.subtitle,
+            thumbnail: thumbnail ?? self.thumbnail
+        )
+    }
 }
 
-extension FavoritesBook {
+extension FavoritesItem {
     init(fromDomain b: Book) {
         self.id = b.id
         self.title = b.title
         self.subtitle = b.subtitle
         self.thumbnail = b.thumbnail
+        
+        self.isLoading = false
+        self.error = nil
     }
 }
 
@@ -83,10 +89,12 @@ extension FavoritesError {
 
 // MARK: - Partial change
 enum FavoritesPartialChange {
-    case bookLoaded(FavoritesBook)
-    case bookError(FavoritesError)
+    case ids([String])
 
-    case refreshSuccess([FavoritesBook])
+    case bookLoaded(FavoritesItem)
+    case bookError(FavoritesError, String)
+
+    case refreshSuccess([FavoritesItem])
     case refreshError(FavoritesError)
 }
 

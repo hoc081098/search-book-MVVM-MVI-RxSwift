@@ -28,19 +28,19 @@ class FavoritesInteractorImpl: FavoritesInteractor {
         return id$.flatMap { (id: String) -> Observable<FavoritesPartialChange> in
             self.booksRepo
                 .getBookBy(id: id, with: .localFirst)
-                .map { FavoritesBook.init(fromDomain: $0) }
+                .map { .init(fromDomain: $0) }
                 .map { .bookLoaded($0) }
-                .startWith(.bookLoading(id))
-                .catchError { (error) -> Observable<FavoritesPartialChange> in .just(.bookError(.init(from: error)))
+                .catchError { (error: Error) -> Observable<FavoritesPartialChange> in
+                    .just(.bookError(.init(from: error), id))
                 }
-            }
+            }.startWith(.ids(Array(ids)))
     }
     
     func refresh(ids: Set<String>) -> Observable<FavoritesPartialChange> {
         let book$s = ids.map { id in
             self.booksRepo
                 .getBookBy(id: id, with: .networkOnly)
-                .map { FavoritesBook.init(fromDomain: $0) }
+                .map { FavoritesItem.init(fromDomain: $0) }
                 .takeLast(1)
         }
         return Observable
