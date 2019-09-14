@@ -22,6 +22,9 @@ extension SwinjectStoryboard {
         container.storyboardInitCompleted(DetailVC.self) { resolver, controller in
             controller.detailVM = resolver ~> DetailVM.self
         }
+        container.storyboardInitCompleted(FavoritesVC.self) { resolver, controller in
+            controller.favoritesVM = resolver ~> FavoritesVM.self
+        }
 
         // MARK: - Data
 
@@ -66,6 +69,17 @@ extension SwinjectStoryboard {
             .inObjectScope(.container)
 
         container.autoregister(DetailVM.self, initializer: DetailVM.init(detailInteractor:))
+
+        container
+            .register(FavoritesInteractor.self) { resolver in
+                FavoritesInteractorImpl(
+                    favBooksRepo: resolver ~> FavoritedBooksRepository.self,
+                    booksRepo: resolver ~> BookRepository.self
+                )
+            }
+            .inObjectScope(.container)
+
+        container.autoregister(FavoritesVM.self, initializer: FavoritesVM.init(detailInteractor:))
     }
 }
 

@@ -35,6 +35,8 @@
 		8F5D283D232546FA0050F748 /* AppError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F5D283C232546FA0050F748 /* AppError.swift */; };
 		8F749A0F232926A6001FBE0F /* DetailInteractorImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F749A0E232926A6001FBE0F /* DetailInteractorImpl.swift */; };
 		8F7640892326099600F20543 /* DetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F7640882326099600F20543 /* DetailVC.swift */; };
+		8FBF012A232CF578003F5AAF /* FavoritesInteractorImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FBF0129232CF578003F5AAF /* FavoritesInteractorImpl.swift */; };
+		8FBF012C232CF62C003F5AAF /* FavoritesVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FBF012B232CF62C003F5AAF /* FavoritesVM.swift */; };
 		8FFD6E912319A1B000869B08 /* CachePolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FFD6E902319A1B000869B08 /* CachePolicy.swift */; };
 /* End PBXBuildFile section */
 
@@ -68,6 +70,8 @@
 		8F5D283C232546FA0050F748 /* AppError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppError.swift; sourceTree = "<group>"; };
 		8F749A0E232926A6001FBE0F /* DetailInteractorImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailInteractorImpl.swift; sourceTree = "<group>"; };
 		8F7640882326099600F20543 /* DetailVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailVC.swift; sourceTree = "<group>"; };
+		8FBF0129232CF578003F5AAF /* FavoritesInteractorImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesInteractorImpl.swift; sourceTree = "<group>"; };
+		8FBF012B232CF62C003F5AAF /* FavoritesVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesVM.swift; sourceTree = "<group>"; };
 		8FFD6E902319A1B000869B08 /* CachePolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CachePolicy.swift; sourceTree = "<group>"; };
 		9DD3686F474EC652A41D21E5 /* Pods-Search Book.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Search Book.debug.xcconfig"; path = "Target Support Files/Pods-Search Book/Pods-Search Book.debug.xcconfig"; sourceTree = "<group>"; };
 		C992F43AFCA6576B1AF7D739 /* Pods_Search_Book.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Search_Book.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -177,6 +181,8 @@
 			children = (
 				8F257B9C232A6A3600DD8EEA /* FavoritesVC.swift */,
 				8F257B9E232A6DCD00DD8EEA /* FavoritesContract.swift */,
+				8FBF0129232CF578003F5AAF /* FavoritesInteractorImpl.swift */,
+				8FBF012B232CF62C003F5AAF /* FavoritesVM.swift */,
 			);
 			path = Favorites;
 			sourceTree = "<group>";
@@ -382,6 +388,7 @@
 				8F3EDD6123268249000B356F /* Colors.swift in Sources */,
 				2E21919D22D5C285008A8CC9 /* HomeContract.swift in Sources */,
 				8F3EDD5F232681E9000B356F /* ScopeFuncs.swift in Sources */,
+				8FBF012C232CF62C003F5AAF /* FavoritesVM.swift in Sources */,
 				8F3EDD65232686AA000B356F /* FavoritedBooksRepositoryImpl.swift in Sources */,
 				8F257B9D232A6A3600DD8EEA /* FavoritesVC.swift in Sources */,
 				2E08413022D33EC700EA0BA8 /* HomeVC.swift in Sources */,
@@ -399,6 +406,7 @@
 				8F48B1FC231EAB9D007F7CF3 /* HomeInteractorImpl.swift in Sources */,
 				4D8E632F91C827BFBD67FF43 /* BookRepositoryImpl.swift in Sources */,
 				8F5D283D232546FA0050F748 /* AppError.swift in Sources */,
+				8FBF012A232CF578003F5AAF /* FavoritesInteractorImpl.swift in Sources */,
 				4D8E6E7B40B2761DFFF077AB /* Mappers.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
