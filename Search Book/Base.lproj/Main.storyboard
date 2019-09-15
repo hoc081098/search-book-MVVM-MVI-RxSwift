@@ -12,7 +12,7 @@
         <!--HomeVC-->
         <scene sceneID="0UE-Y2-lfa">
             <objects>
-                <viewController restorationIdentifier="HomeVC" storyboardIdentifier="HomeVC" id="x6O-xn-ssb" customClass="HomeVC" customModule="Search_Book" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="HomeVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="x6O-xn-ssb" customClass="HomeVC" customModule="Search_Book" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Bsq-FJ-6eN">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

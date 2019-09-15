@@ -128,7 +128,7 @@ class HomeVM: MviViewModelType {
             .withLatestFrom(searchString$) { ($0, $1) }
 
         let changes = [
-            Observable.merge([loadNextPage$, retryNextPage$]).flatMapFirst { tuple in
+            Observable.merge([loadNextPage$, retryNextPage$]).flatMapFirst { [homeInteractor, weak self] tuple in
                 homeInteractor
                     .loadNextPage(
                         query: tuple.1,
@@ -137,17 +137,17 @@ class HomeVM: MviViewModelType {
                     .observeOn(MainScheduler.instance)
                     .do(onNext: { change in
                         if case .loadNextPageError(let error, _) = change {
-                            self.singleEventS.accept(.loadError(error))
+                            self?.singleEventS.accept(.loadError(error))
                         }
                     })
             },
-            Observable.merge([searchString$, retryFirstPage$]).flatMapLatest { searchTerm in
+            Observable.merge([searchString$, retryFirstPage$]).flatMapLatest { [homeInteractor, weak self] searchTerm in
                 homeInteractor
                     .searchBook(query: searchTerm)
                     .observeOn(MainScheduler.instance)
                     .do(onNext: { change in
                         if case .loadFirstPageError(let error, _) = change {
-                            self.singleEventS.accept(.loadError(error))
+                            self?.singleEventS.accept(.loadError(error))
                         }
                     })
             }
@@ -178,8 +178,8 @@ class HomeVM: MviViewModelType {
             )
         }
             .distinctUntilChanged()
-            .bind(to: viewStateS)
-            .disposed(by: disposeBag)
+            .bind(to: self.viewStateS)
+            .disposed(by: self.disposeBag)
 
         intentS
             .compactMap { (intent: HomeIntent) -> HomeBook? in
@@ -192,9 +192,13 @@ class HomeVM: MviViewModelType {
             .groupBy { $0.id }
             .map { $0.throttle(.milliseconds(500), scheduler: MainScheduler.instance) }
             .flatMap { $0 }
-            .concatMap { homeInteractor.toggleFavorited(book: $0) }
-            .subscribe(onNext: { self.singleEventS.accept($0) })
-            .disposed(by: disposeBag)
+            .concatMap { [homeInteractor] in homeInteractor.toggleFavorited(book: $0) }
+            .subscribe(onNext: { [weak self] in self?.singleEventS.accept($0) })
+            .disposed(by: self.disposeBag)
+    }
+
+    deinit {
+        print("HomeVM::deinit")
     }
 
     static func reducer(vs: HomeViewState, change: HomePartialChange) -> HomeViewState {

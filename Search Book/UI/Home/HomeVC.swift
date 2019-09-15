@@ -102,27 +102,28 @@ class HomeCell: UITableViewCell {
 
 class HomeVC: UIViewController {
     var homeVM: HomeVM!
-
-
     private let disposeBag = DisposeBag()
     private let intentS = PublishRelay<HomeIntent>()
+    private var dataSource: RxTableViewSectionedReloadDataSource<SectionModel<String, HomeItem>>!
+
+    // MARK: - Views
 
     @IBOutlet weak var tableView: UITableView!
-    private var fabY: CGFloat?
     private weak var fab: MDCFloatingButton?
     private weak var labelFavCount: UILabel?
-
-    private lazy var searchBar: UISearchBar = {
-        let searchBar = UISearchBar(frame: .zero)
-        searchBar.placeholder = "Search book"
-        searchBar.sizeToFit()
-        return searchBar
-    }()
+    private weak var searchBar: UISearchBar!
+    private var fabY: CGFloat?
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        let searchBar = UISearchBar(frame: .zero).apply {
+            $0.placeholder = "Search book"
+            $0.sizeToFit()
+        }
         self.navigationItem.titleView = searchBar
+        self.searchBar = searchBar
+
         self.tableView.estimatedRowHeight = 104
         self.tableView.rowHeight = UITableView.automaticDimension
 
@@ -134,14 +135,18 @@ class HomeVC: UIViewController {
         self.addFab()
     }
 
+    deinit {
+        print("HomeVC::deinit")
+    }
+
     private func bindVM() {
-        let dataSource = RxTableViewSectionedReloadDataSource<SectionModel<String, HomeItem>>(
-            configureCell: { dataSource, tableView, indexPath, item in
+        self.dataSource = RxTableViewSectionedReloadDataSource<SectionModel<String, HomeItem>>(
+            configureCell: { [weak self] dataSource, tableView, indexPath, item in
                 switch item {
                 case .book(let book):
                     return (tableView.dequeueReusableCell(withIdentifier: "home_cell", for: indexPath) as! HomeCell).apply {
                         $0.bind(book, indexPath.row)
-                        $0.tapImageFav = { [weak self] in
+                        $0.tapImageFav = {
                             self?.intentS.accept(.toggleFavorite(book: book))
                         }
                     }
@@ -151,7 +156,7 @@ class HomeVC: UIViewController {
                     }
                 case .error(let error, let isFirstPage):
                     return (tableView.dequeueReusableCell(withIdentifier: "error_cell", for: indexPath) as! ErrorCell).apply {
-                        $0.tapped = { [weak self] in
+                        $0.tapped = {
                             self?.intentS.accept(
                                 isFirstPage
                                     ? .retryLoadFirstPage
@@ -167,24 +172,25 @@ class HomeVC: UIViewController {
             }
         )
 
-        self.tableView.rx
+        self.tableView
+            .rx
             .itemSelected
-            .map { (indexPath: IndexPath) -> HomeItem in
-                let section = dataSource.sectionModels[indexPath.section]
-                return section.items[indexPath.row]
-            }
-            .compactMap { (item: HomeItem) -> HomeBook? in
-                if case .book(let book) = item {
+            .compactMap { [weak dataSource] (indexPath) -> HomeBook? in
+                let section = dataSource?.sectionModels[indexPath.section]
+                if let item = section?.items[indexPath.row],
+                    case .book(let book) = item {
                     return book
                 } else {
                     return nil
                 }
             }
-            .subscribe(onNext: { book in
+            .subscribe(onNext: { [weak navigationController] book in
+                guard let navController = navigationController else { return }
+
                 let storyboard = SwinjectStoryboard.create(name: "Main", bundle: nil)
                 let detailVC = (storyboard.instantiateViewController(withIdentifier: "DetailVC") as! DetailVC)
                     .apply { $0.initialDetail = .init(fromHomeBook: book) }
-                self.navigationController?.pushViewController(detailVC, animated: true)
+                navController.pushViewController(detailVC, animated: true)
             })
             .disposed(by: disposeBag)
 
@@ -207,18 +213,17 @@ class HomeVC: UIViewController {
             .map { String($0.favCount) }
             .distinctUntilChanged()
             .startWith("0")
-            .drive(onNext: { count in
-                let animation = CAKeyframeAnimation(keyPath: "transform.scale").apply {
-                    $0.values = [1.0, 1.2, 0.9, 1.0]
-                    $0.keyTimes = [0, 0.2, 0.4, 1]
-                    $0.duration = 0.8
-                    $0.repeatCount = 1
-                    $0.isRemovedOnCompletion = true
-                }
-
-                self.labelFavCount.map {
+            .drive(onNext: { [weak labelFavCount] count in
+                labelFavCount.map {
                     $0.layer.removeAnimation(forKey: "pulse")
                     $0.text = count
+                    let animation = CAKeyframeAnimation(keyPath: "transform.scale").apply {
+                        $0.values = [1.0, 1.2, 0.9, 1.0]
+                        $0.keyTimes = [0, 0.2, 0.4, 1]
+                        $0.duration = 0.8
+                        $0.repeatCount = 1
+                        $0.isRemovedOnCompletion = true
+                    }
                     $0.layer.add(animation, forKey: "pulse")
                 }
             })
@@ -226,7 +231,7 @@ class HomeVC: UIViewController {
 
         homeVM
             .singleEvent$
-            .emit(onNext: { event in
+            .emit(onNext: { [weak self] event in
                 print("Event=\(event)")
 
                 let message = MDCSnackbarMessage().apply {
@@ -252,7 +257,7 @@ class HomeVC: UIViewController {
                     }
 
                     $0.completionHandler = { _ in
-                        if let fabY = self.fabY, let fab = self.fab {
+                        if let fabY = self?.fabY, let fab = self?.fab {
                             UIView.animate(withDuration: 0.3, animations: {
                                 fab.frame = CGRect.init(
                                     x: fab.frame.minX,
@@ -260,12 +265,12 @@ class HomeVC: UIViewController {
                                     width: fab.frame.width,
                                     height: fab.frame.height)
                             })
-                            self.fabY = fabY + 54
+                            self?.fabY = fabY + 54
                         }
                     }
                 }
 
-                if let fabY = self.fabY, let fab = self.fab {
+                if let fabY = self?.fabY, let fab = self?.fab {
                     UIView.animate(withDuration: 0.3, animations: {
                         fab.frame = CGRect.init(
                             x: fab.frame.minX,
@@ -273,7 +278,7 @@ class HomeVC: UIViewController {
                             width: fab.frame.width,
                             height: fab.frame.height)
                     })
-                    self.fabY = fabY - 54
+                    self?.fabY = fabY - 54
                 }
                 MDCSnackbarManager.show(message)
             })
@@ -291,8 +296,8 @@ class HomeVC: UIViewController {
                         .contentOffset
                         .asObservable()
                         .throttle(.milliseconds(400), scheduler: MainScheduler.instance)
-                        .filter { _ in
-                            self.tableView.isNearBottomEdge(edgeOffset: 30)
+                        .filter { [weak tableView] _ in
+                            tableView?.isNearBottomEdge(edgeOffset: 30) ?? false
                         }
                         .map { _ in HomeIntent.loadNextPage },
                     intentS.asObservable()
