@@ -49,12 +49,13 @@ class DetailVM: MviViewModelType {
             }
             .take(1)
             .do(onNext: { _ in print("Initial intent") })
-            .flatMap {
-                detailInteractor.getDetailBy(id: $0.id)
+            .flatMap { [detailInteractor, weak self] in
+                detailInteractor
+                    .getDetailBy(id: $0.id)
                     .startWith(.initialLoaded($0))
                     .do(onNext: { change in
                         if case .detailError(let error) = change {
-                            self.singleEventS.accept(.getDetailError(error))
+                            self?.singleEventS.accept(.getDetailError(error))
                         }
                     })
         }
@@ -77,15 +78,15 @@ class DetailVM: MviViewModelType {
                 }
             }
             .do(onNext: { _ in print("Refresh intent") })
-            .flatMapFirst {
+            .flatMapFirst { [detailInteractor, weak self] in
                 detailInteractor
                     .refresh(id: $0)
                     .do(onNext: { change in
                         switch change {
                         case .refreshError(let error):
-                            self.singleEventS.accept(.refreshError(error))
+                            self?.singleEventS.accept(.refreshError(error))
                         case .refreshSuccess(_):
-                            self.singleEventS.accept(.refreshSuccess)
+                            self?.singleEventS.accept(.refreshSuccess)
                         default: ()
                         }
                     })
@@ -130,11 +131,15 @@ class DetailVM: MviViewModelType {
             .groupBy { $0.id }
             .map { $0.throttle(.milliseconds(500), scheduler: MainScheduler.instance) }
             .flatMap { $0 }
-            .concatMap { self.detailInteractor.toggleFavorited(detail: $0) }
-            .subscribe(onNext: { self.singleEventS.accept($0) })
-            .disposed(by: disposeBag)
+            .concatMap { [detailInteractor] in detailInteractor.toggleFavorited(detail: $0) }
+            .subscribe(onNext: { [weak self] in self?.singleEventS.accept($0) })
+            .disposed(by: self.disposeBag)
     }
 
+    deinit {
+        print("DetailVM::deinit")
+    }
+    
     static func reducer(vs: DetailViewState, change: DetailPartialChange) -> DetailViewState {
         print("Change=\(change.name)")
 

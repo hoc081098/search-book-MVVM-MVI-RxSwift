@@ -51,13 +51,17 @@ class DetailVC: UIViewController {
         super.viewDidLayoutSubviews()
         addFab()
     }
+    
+    deinit {
+        print("DetailVC::deinit")
+    }
 
     // MARK: - Bind VM
 
     private func bindVM() {
         self.detailVM
             .state$
-            .drive(onNext: self.render)
+            .drive(onNext: { [weak self] in self?.render($0) })
             .disposed(by: self.disposeBag)
 
         detailVM
@@ -76,9 +80,9 @@ class DetailVC: UIViewController {
                     case .refreshSuccess:
                         $0.text = "Refresh success"
                     case .refreshError(let error):
-                        $0.text = "Refesh error: \(self.getMessage(from: error))"
+                        $0.text = "Refesh error: \(DetailVC.getMessage(from: error))"
                     case .getDetailError(let error):
-                        $0.text = "Get detail error: \(self.getMessage(from: error))"
+                        $0.text = "Get detail error: \(DetailVC.getMessage(from: error))"
                     }
                 }
                 MDCSnackbarManager.show(message)
@@ -97,7 +101,7 @@ class DetailVC: UIViewController {
             .disposed(by: disposeBag)
     }
 
-    private func getMessage(from error: DetailError) -> String {
+    private static func getMessage(from error: DetailError) -> String {
         switch error {
         case .networkError:
             return "Network error"
