@@ -8,15 +8,21 @@
 
 import UIKit
 import RxCocoa
+import RxSwift
 
 class FavoritesVC: UIViewController {
     var favoritesVM: FavoritesVM!
+    private let disposeBag = DisposeBag.init()
 
     @IBOutlet weak var tableView: UITableView!
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
+        self.favoritesVM.state$.drive(onNext: {[weak self] _ in
+            self
+        }).disposed(by: self.disposeBag)
+
         self.favoritesVM
             .state$
             .map { $0.books ?? [] }
@@ -31,6 +37,11 @@ class FavoritesVC: UIViewController {
                     }
                     return item.title ?? "N/A"
                 }()
-        }
+            }
+            .disposed(by: self.disposeBag)
+    }
+
+    deinit {
+        print("FavoritesVC::deinit")
     }
 }
