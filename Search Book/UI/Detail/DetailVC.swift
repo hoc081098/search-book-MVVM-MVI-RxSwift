@@ -50,59 +50,63 @@ class DetailVC: UIViewController {
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        addFab()
+        self.addFab()
     }
-    
+
     deinit {
         print("DetailVC::deinit")
     }
+}
 
-    // MARK: - Bind VM
-
-    private func bindVM() {
+// MARK: - Bind VM
+private extension DetailVC {
+    func bindVM() {
         self.detailVM
             .state$
             .drive(onNext: { [weak self] in self?.render($0) })
             .disposed(by: self.disposeBag)
 
-        detailVM
+        self.detailVM
             .singleEvent$
-            .emit(onNext: { event in
-                print("Event=\(event)")
-
-                let message = MDCSnackbarMessage().apply {
-                    $0.duration = 2
-
-                    switch event {
-                    case .addedToFavorited(let detail):
-                        $0.text = "Added '\(detail.title ?? "")' to favorited"
-                    case .removedFromFavorited(let detail):
-                        $0.text = "Removed '\(detail.title ?? "")' from favorited"
-                    case .refreshSuccess:
-                        $0.text = "Refresh success"
-                    case .refreshError(let error):
-                        $0.text = "Refesh error: \(DetailVC.getMessage(from: error))"
-                    case .getDetailError(let error):
-                        $0.text = "Get detail error: \(DetailVC.getMessage(from: error))"
-                    }
-                }
-                MDCSnackbarManager.show(message)
-            })
-            .disposed(by: disposeBag)
+            .emit(onNext: DetailVC.showSnackbar)
+            .disposed(by: self.disposeBag)
 
         self.detailVM
-            .process(intent$: .merge([
+            .process(
+                intent$: .merge([
                         .just(.initial(initialDetail)),
                     self.refreshControl
                         .rx
                         .controlEvent(.valueChanged)
                         .map { .refresh },
                     self.intentS.asObservable()
-                    ]))
-            .disposed(by: disposeBag)
+                    ]
+                )
+            )
+            .disposed(by: self.disposeBag)
     }
 
-    private static func getMessage(from error: DetailError) -> String {
+    static func showSnackbar(_ event: DetailSingleEvent) {
+        let message = MDCSnackbarMessage().apply {
+            $0.duration = 2
+
+            switch event {
+            case .addedToFavorited(let detail):
+                $0.text = "Added '\(detail.title ?? "")' to favorited"
+            case .removedFromFavorited(let detail):
+                $0.text = "Removed '\(detail.title ?? "")' from favorited"
+            case .refreshSuccess:
+                $0.text = "Refresh success"
+            case .refreshError(let error):
+                $0.text = "Refesh error: \(DetailVC.getMessage(from: error))"
+            case .getDetailError(let error):
+                $0.text = "Get detail error: \(DetailVC.getMessage(from: error))"
+            }
+        }
+        MDCSnackbarManager.show(message)
+    }
+
+    static func getMessage(from error: DetailError) -> String {
         switch error {
         case .networkError:
             return "Network error"
@@ -113,7 +117,7 @@ class DetailVC: UIViewController {
         }
     }
 
-    private func loadLargeImage(_ vs: DetailViewState) {
+    func loadLargeImage(_ vs: DetailViewState) {
         let url = URL.init(string: vs.detail?.largeImage ?? "")
 
         let processor = DownsamplingImageProcessor(size: self.imageLarge.frame.size)
@@ -131,7 +135,7 @@ class DetailVC: UIViewController {
         )
     }
 
-    private func loadThumbnailImage(_ vs: DetailViewState) {
+    func loadThumbnailImage(_ vs: DetailViewState) {
         let url = URL.init(string: vs.detail?.thumbnail ?? "")
 
         let processor = DownsamplingImageProcessor(size: self.imageThumbnail.frame.size) >> RoundCornerImageProcessor(cornerRadius: 12)
@@ -149,7 +153,7 @@ class DetailVC: UIViewController {
         )
     }
 
-    private func setText(_ vs: DetailViewState) {
+    func setText(_ vs: DetailViewState) {
         self.labelTitle.text = vs.isLoading ? "Loading..." : (vs.detail?.title ?? "No title")
         self.labelSubtitle.text = vs.isLoading ? "Loading" : (vs.detail?.subtitle ?? "No subtitle")
 
@@ -165,12 +169,12 @@ class DetailVC: UIViewController {
         self.labelDescription.attributedText = descriptionHtml.map { NSMutableAttributedString.init(attributedString: $0) }?.with(font: UIFont.init(name: "Thonburi", size: 15)!)
     }
 
-    private func setFabIcon(_ vs: DetailViewState) {
+    func setFabIcon(_ vs: DetailViewState) {
         if let fav = vs.detail?.isFavorited, let fab = self.fab {
             let image = fav
                 ? UIImage(named: "baseline_favorite_white_36pt")
                 : UIImage(named: "baseline_favorite_border_white_36pt")
-           
+
             UIView.transition(
                 with: fab,
                 duration: 0.4,
@@ -180,7 +184,7 @@ class DetailVC: UIViewController {
         }
     }
 
-    private func render(_ vs: DetailViewState) {
+    func render(_ vs: DetailViewState) {
         loadLargeImage(vs)
         loadThumbnailImage(vs)
         setText(vs)

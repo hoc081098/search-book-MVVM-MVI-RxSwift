@@ -16,6 +16,8 @@ import SwinjectStoryboard
 import Swinject
 import MaterialComponents.MaterialButtons
 
+// MARK: - Table View Cells
+
 class LoadingCell: UITableViewCell {
     @IBOutlet weak var indicator: UIActivityIndicatorView!
 
@@ -100,11 +102,12 @@ class HomeCell: UITableViewCell {
     }
 }
 
+// MARK: - HomeVC
+
 class HomeVC: UIViewController {
     var homeVM: HomeVM!
     private let disposeBag = DisposeBag()
     private let intentS = PublishRelay<HomeIntent>()
-    private var dataSource: RxTableViewSectionedReloadDataSource<SectionModel<String, HomeItem>>!
 
     // MARK: - Views
 
@@ -113,6 +116,8 @@ class HomeVC: UIViewController {
     private weak var labelFavCount: UILabel?
     private weak var searchBar: UISearchBar!
     private var fabY: CGFloat?
+
+    // MARK: - Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -138,40 +143,61 @@ class HomeVC: UIViewController {
     deinit {
         print("HomeVC::deinit")
     }
+}
 
-    private func bindVM() {
-        self.dataSource = RxTableViewSectionedReloadDataSource<SectionModel<String, HomeItem>>(
+// MARK: - Bind VM
+private extension HomeVC {
+    static func configureCell(
+        tableView: UITableView,
+        indexPath: IndexPath,
+        item: HomeItem,
+        tapImageFav: @escaping (HomeBook) -> (),
+        tappedRetry: @escaping (Bool) -> ()
+    ) -> UITableViewCell {
+        switch item {
+        case .book(let book):
+            return (tableView.dequeueReusableCell(withIdentifier: "home_cell", for: indexPath) as! HomeCell).apply {
+                $0.bind(book, indexPath.row)
+                $0.tapImageFav = { tapImageFav(book) }
+            }
+        case .loading:
+            return (tableView.dequeueReusableCell(withIdentifier: "loading_cell", for: indexPath) as! LoadingCell).apply {
+                $0.bind()
+            }
+        case .error(let error, let isFirstPage):
+            return (tableView.dequeueReusableCell(withIdentifier: "error_cell", for: indexPath) as! ErrorCell).apply {
+                $0.tapped = { tappedRetry(isFirstPage) }
+                $0.bind(error)
+            }
+        }
+    }
+
+    func bindVM() {
+        // create rx datasource
+        let dataSource = RxTableViewSectionedReloadDataSource<SectionModel<String, HomeItem>>(
             configureCell: { [weak self] dataSource, tableView, indexPath, item in
-                switch item {
-                case .book(let book):
-                    return (tableView.dequeueReusableCell(withIdentifier: "home_cell", for: indexPath) as! HomeCell).apply {
-                        $0.bind(book, indexPath.row)
-                        $0.tapImageFav = {
-                            self?.intentS.accept(.toggleFavorite(book: book))
-                        }
+                HomeVC.configureCell(
+                    tableView: tableView,
+                    indexPath: indexPath,
+                    item: item,
+                    tapImageFav: {
+                        self?.intentS.accept(.toggleFavorite(book: $0))
+                    },
+                    tappedRetry: {
+                        self?.intentS.accept(
+                            $0
+                                ? .retryLoadFirstPage
+                                : .retryLoadNextPage
+                        )
                     }
-                case .loading:
-                    return (tableView.dequeueReusableCell(withIdentifier: "loading_cell", for: indexPath) as! LoadingCell).apply {
-                        $0.bind()
-                    }
-                case .error(let error, let isFirstPage):
-                    return (tableView.dequeueReusableCell(withIdentifier: "error_cell", for: indexPath) as! ErrorCell).apply {
-                        $0.tapped = {
-                            self?.intentS.accept(
-                                isFirstPage
-                                    ? .retryLoadFirstPage
-                                    : .retryLoadNextPage
-                            )
-                        }
-                        $0.bind(error)
-                    }
-                }
+                )
             },
             titleForHeaderInSection: { dataSource, sectionIndex in
                 return dataSource.sectionModels[sectionIndex].model
             }
         )
 
+        // item selected event
         self.tableView
             .rx
             .itemSelected
@@ -184,17 +210,10 @@ class HomeVC: UIViewController {
                     return nil
                 }
             }
-            .subscribe(onNext: { [weak navigationController] book in
-                guard let navController = navigationController else { return }
-
-                let storyboard = SwinjectStoryboard.create(name: "Main", bundle: nil)
-                let detailVC = (storyboard.instantiateViewController(withIdentifier: "DetailVC") as! DetailVC)
-                    .apply { $0.initialDetail = .init(fromHomeBook: book) }
-                navController.pushViewController(detailVC, animated: true)
-            })
+            .subscribe(onNext: { [weak self] book in self?.toDetailVC(with: book) })
             .disposed(by: disposeBag)
 
-
+        // bind list to table view
         homeVM
             .state$
             .map { state in
@@ -208,82 +227,22 @@ class HomeVC: UIViewController {
             .drive(self.tableView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
 
+        // bind fav count to bagde
         homeVM
             .state$
             .map { String($0.favCount) }
             .distinctUntilChanged()
             .startWith("0")
-            .drive(onNext: { [weak self] count in
-                self?.labelFavCount.map {
-                    $0.layer.removeAnimation(forKey: "pulse")
-                    $0.text = count
-                    let animation = CAKeyframeAnimation(keyPath: "transform.scale").apply {
-                        $0.values = [1.0, 1.2, 0.9, 1.0]
-                        $0.keyTimes = [0, 0.2, 0.4, 1]
-                        $0.duration = 0.8
-                        $0.repeatCount = 1
-                        $0.isRemovedOnCompletion = true
-                    }
-                    $0.layer.add(animation, forKey: "pulse")
-                }
-            })
+            .drive(onNext: { [weak self] count in self?.updateBadge(with: count) })
             .disposed(by: disposeBag)
 
+        // observe single event
         homeVM
             .singleEvent$
-            .emit(onNext: { [weak self] event in
-                print("Event=\(event)")
-
-                let message = MDCSnackbarMessage().apply {
-                    $0.duration = 2
-                    switch event {
-                    case .addedToFavorited(let book):
-                        $0.text = "Added '\(book.title ?? "")' to favorited"
-                    case .removedFromFavorited(let book):
-                        $0.text = "Removed '\(book.title ?? "")' from favorited"
-                    case .loadError(let error):
-                        let errorMessage: String
-
-                        switch error {
-                        case .networkError:
-                            errorMessage = "Network error"
-                        case .serverResponseError(_, let message):
-                            errorMessage = "Server response error: \(message)"
-                        case .unexpectedError:
-                            errorMessage = "Unexpected error"
-                        }
-
-                        $0.text = "Loaded error: \(errorMessage)"
-                    }
-
-                    $0.completionHandler = { _ in
-                        if let fabY = self?.fabY, let fab = self?.fab {
-                            UIView.animate(withDuration: 0.3, animations: {
-                                fab.frame = CGRect.init(
-                                    x: fab.frame.minX,
-                                    y: fabY + 54,
-                                    width: fab.frame.width,
-                                    height: fab.frame.height)
-                            })
-                            self?.fabY = fabY + 54
-                        }
-                    }
-                }
-
-                if let fabY = self?.fabY, let fab = self?.fab {
-                    UIView.animate(withDuration: 0.3, animations: {
-                        fab.frame = CGRect.init(
-                            x: fab.frame.minX,
-                            y: fabY - 54,
-                            width: fab.frame.width,
-                            height: fab.frame.height)
-                    })
-                    self?.fabY = fabY - 54
-                }
-                MDCSnackbarManager.show(message)
-            })
+            .emit(onNext: { [weak self] event in self?.showSnackbar(event: event) })
             .disposed(by: disposeBag)
 
+        // process intent
         homeVM
             .process(
                 intent$: Observable.merge([
@@ -307,6 +266,85 @@ class HomeVC: UIViewController {
             .disposed(by: disposeBag)
     }
 
+    func toDetailVC(with book: HomeBook) {
+        guard let navController = self.navigationController else { return }
+
+        let storyboard = SwinjectStoryboard.create(name: "Main", bundle: nil)
+        let detailVC = (storyboard.instantiateViewController(withIdentifier: "DetailVC") as! DetailVC)
+            .apply { $0.initialDetail = .init(fromHomeBook: book) }
+        navController.pushViewController(detailVC, animated: true)
+    }
+
+    func updateBadge(with count: String) {
+        self.labelFavCount.map {
+            $0.layer.removeAnimation(forKey: "pulse")
+            $0.text = count
+            let animation = CAKeyframeAnimation(keyPath: "transform.scale").apply {
+                $0.values = [1.0, 1.2, 0.9, 1.0]
+                $0.keyTimes = [0, 0.2, 0.4, 1]
+                $0.duration = 0.8
+                $0.repeatCount = 1
+                $0.isRemovedOnCompletion = true
+            }
+            $0.layer.add(animation, forKey: "pulse")
+        }
+    }
+
+    func showSnackbar(event: HomeSingleEvent) {
+        print("Event=\(event)")
+
+        let message = MDCSnackbarMessage().apply {
+            $0.duration = 2
+            switch event {
+            case .addedToFavorited(let book):
+                $0.text = "Added '\(book.title ?? "")' to favorited"
+            case .removedFromFavorited(let book):
+                $0.text = "Removed '\(book.title ?? "")' from favorited"
+            case .loadError(let error):
+                let errorMessage: String
+
+                switch error {
+                case .networkError:
+                    errorMessage = "Network error"
+                case .serverResponseError(_, let message):
+                    errorMessage = "Server response error: \(message)"
+                case .unexpectedError:
+                    errorMessage = "Unexpected error"
+                }
+
+                $0.text = "Loaded error: \(errorMessage)"
+            }
+
+            $0.completionHandler = { [weak self] _ in
+                if let fabY = self?.fabY, let fab = self?.fab {
+                    UIView.animate(withDuration: 0.3, animations: {
+                        fab.frame = CGRect.init(
+                            x: fab.frame.minX,
+                            y: fabY + 54,
+                            width: fab.frame.width,
+                            height: fab.frame.height)
+                    })
+                    self?.fabY = fabY + 54
+                }
+            }
+        }
+
+        if let fabY = self.fabY, let fab = self.fab {
+            UIView.animate(withDuration: 0.3, animations: {
+                fab.frame = CGRect.init(
+                    x: fab.frame.minX,
+                    y: fabY - 54,
+                    width: fab.frame.width,
+                    height: fab.frame.height)
+            })
+            self.fabY = fabY - 54
+        }
+        MDCSnackbarManager.show(message)
+    }
+}
+
+// MARK: - Setup UI
+private extension HomeVC {
     func addFab() {
         guard self.labelFavCount == nil else { return }
 
@@ -362,7 +400,7 @@ class HomeVC: UIViewController {
         self.fab = button
     }
 
-    @objc private func tappedFabButton() {
+    @objc func tappedFabButton() {
         let storyboard = SwinjectStoryboard.create(name: "Main", bundle: nil)
         let favoritesVC = (storyboard.instantiateViewController(withIdentifier: "FavoritesVC") as! FavoritesVC)
         self.navigationController?.pushViewController(favoritesVC, animated: true)
