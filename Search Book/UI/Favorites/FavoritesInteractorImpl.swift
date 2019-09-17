@@ -45,6 +45,7 @@ class FavoritesInteractorImpl: FavoritesInteractor {
         }
         return Observable
             .combineLatest(book$s) { books in FavoritesPartialChange.refreshSuccess(books) }
+            .startWith(.refreshing)
             .catchError{ error -> Observable<FavoritesPartialChange> in
                 .just(.refreshError(.init(from: error)))
             }
@@ -53,12 +54,13 @@ class FavoritesInteractorImpl: FavoritesInteractor {
     func removeFavorite(item: FavoritesItem) -> Single<FavoritesSingleEvent> {
         return Single
             .deferred {
-                let result = self.favBooksRepo.toggleFavorited(book: item.toDomain())
+                let result = self.favBooksRepo
+                    .toggleFavorited(book: item.toDomain())
                 return .just(result)
             }
             .map { (result: ToggleFavoritedResult) -> FavoritesSingleEvent in
                 if result.added {
-                    return .removeFromFavoritesError(item, .areadyRemovedFromFavorited(item))
+                    return .removeFromFavoritesError(item)
                 } else {
                     return .removedFromFavorites(item)
                 }

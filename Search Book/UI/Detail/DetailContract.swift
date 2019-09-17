@@ -54,6 +54,14 @@ extension InitialBookDetail {
         self.thumbnail = b.thumbnail
         self.isFavorited = b.isFavorited
     }
+    
+    init(fromFavoritesItem item: FavoritesItem) {
+        self.id = item.id
+        self.title = item.title
+        self.subtitle = item.subtitle
+        self.thumbnail = item.thumbnail
+        self.isFavorited = true
+    }
 }
 
 struct BookDetail: Equatable {

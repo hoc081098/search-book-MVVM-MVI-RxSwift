@@ -39,6 +39,7 @@ class DetailVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        self.title = "Detail"
         setupCardView()
         addBlurEffectToCardView()
         setupBackgroundColor()

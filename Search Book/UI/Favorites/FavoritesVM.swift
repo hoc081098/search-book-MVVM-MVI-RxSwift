@@ -14,7 +14,8 @@ import RxCocoa
 
 class FavoritesVM: MviViewModelType {
     static let initialState = FavoritesViewState(
-        books: nil
+        books: nil,
+        isRefreshing: false
     )
 
     private let intentS = PublishRelay<FavoritesIntent>()
@@ -69,7 +70,9 @@ class FavoritesVM: MviViewModelType {
             .concatMap { [detailInteractor] in
                 detailInteractor.removeFavorite(item: $0)
             }
-            .subscribe(onNext: { event in })
+            .subscribe(onNext: { [weak self] event in
+                self?.singleEventS.accept(event)
+            })
             .disposed(by: self.disposeBag)
     }
 
@@ -81,7 +84,7 @@ class FavoritesVM: MviViewModelType {
         print(change)
         switch change {
         case .bookLoaded(let book):
-            return vs.copyWith(books: replace(items: vs.books!, by: book))
+            return vs.copyWith(books: replace(items: vs.books ?? [], by: book))
         case .bookError(let error, let id):
             let books = vs.books!.map { book -> FavoritesItem in
                 if book.id == id {
@@ -99,20 +102,22 @@ class FavoritesVM: MviViewModelType {
             }
             return vs.copyWith(books: books)
         case .refreshSuccess(let books):
-            return vs.copyWith(books: books)
-        case .refreshError(let error):
-            return vs
+            return vs.copyWith(books: books, isRefreshing: false)
+        case .refreshError(_):
+            return vs.copyWith(books: vs.books ?? [], isRefreshing: false)
         case .ids(let ids):
-            return vs.copyWith(books: vs.books ??
-                ids.map { id in
-                    FavoritesItem.init(
-                        isLoading: true,
-                        error: nil,
-                        id: id,
-                        title: nil,
-                        subtitle: nil,
-                        thumbnail: nil)
+            return vs.copyWith(books:
+                    ids.map { id in
+                        FavoritesItem.init(
+                            isLoading: true,
+                            error: nil,
+                            id: id,
+                            title: nil,
+                            subtitle: nil,
+                            thumbnail: nil)
                 })
+        case .refreshing:
+            return vs.copyWith(books: vs.books ?? [], isRefreshing: true)
         }
     }
 

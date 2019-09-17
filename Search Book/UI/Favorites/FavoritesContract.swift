@@ -18,9 +18,10 @@ enum FavoritesIntent {
 // MARK: - View state
 struct FavoritesViewState: Equatable {
     let books: [FavoritesItem]?
+    let isRefreshing: Bool
 
-    func copyWith(books: [FavoritesItem]) -> FavoritesViewState {
-        return .init(books: books)
+    func copyWith(books: [FavoritesItem], isRefreshing: Bool? = nil) -> FavoritesViewState {
+        return .init(books: books, isRefreshing: isRefreshing ?? self.isRefreshing)
     }
 }
 
@@ -80,7 +81,6 @@ enum FavoritesError: Equatable {
     case networkError
     case serverResponseError(Int, String)
     case unexpectedError
-    case areadyRemovedFromFavorited(FavoritesItem)
 }
 
 extension FavoritesError {
@@ -108,6 +108,7 @@ enum FavoritesPartialChange {
     case bookLoaded(FavoritesItem)
     case bookError(FavoritesError, String)
 
+    case refreshing
     case refreshSuccess([FavoritesItem])
     case refreshError(FavoritesError)
 }
@@ -115,7 +116,7 @@ enum FavoritesPartialChange {
 // MARK: - Single event
 enum FavoritesSingleEvent {
     case removedFromFavorites(FavoritesItem)
-    case removeFromFavoritesError(FavoritesItem, FavoritesError)
+    case removeFromFavoritesError(FavoritesItem)
 }
 
 // MARK: - Interactor

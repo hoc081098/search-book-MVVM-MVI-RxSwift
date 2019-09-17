@@ -10,6 +10,8 @@ import UIKit
 import RxCocoa
 import RxSwift
 import Kingfisher
+import MaterialComponents.MaterialSnackbar
+import SwinjectStoryboard
 
 private func getMessage(from error: FavoritesError) -> String {
     switch error {
@@ -42,7 +44,7 @@ class FavoritesCell: UITableViewCell {
             }
             return item.title ?? "N/A"
         }()
-        self.labelTitle.text = "\(row + 1). \(title)"
+        self.labelTitle.text = "\(row + 1) - \(title)"
 
 
         self.labelSubtitle.text = {
@@ -80,9 +82,25 @@ class FavoritesVC: UIViewController {
     private let disposeBag = DisposeBag.init()
 
     @IBOutlet weak var tableView: UITableView!
+    private weak var refreshControl: UIRefreshControl!
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        self.title = "Favorite"
+        let refreshControl = UIRefreshControl.init().apply {
+            let attributes = [
+                NSAttributedString.Key.font: UIFont.init(name: "Thonburi", size: 15)!,
+                NSAttributedString.Key.foregroundColor: UIColor.black
+            ]
+            $0.attributedTitle = NSAttributedString.init(
+                string: "Refreshing...",
+                attributes: attributes
+            )
+        }
+        self.tableView.refreshControl = refreshControl
+        self.refreshControl = refreshControl
+
 
         let items$ = self.favoritesVM
             .state$
@@ -96,7 +114,47 @@ class FavoritesVC: UIViewController {
             }
             .disposed(by: self.disposeBag)
 
+        self.tableView
+            .rx
+            .itemSelected
+            .withLatestFrom(items$) { indexPath, items in
+                items[indexPath.row]
+            }
+            .subscribe(onNext: { [weak navigationController] item in
+                guard let navController = navigationController else { return }
 
+                let storyboard = SwinjectStoryboard.create(name: "Main", bundle: nil)
+                let detailVC = (storyboard.instantiateViewController(withIdentifier: "DetailVC") as! DetailVC)
+                    .apply { $0.initialDetail = .init(fromFavoritesItem: item) }
+                navController.pushViewController(detailVC, animated: true)
+            })
+            .disposed(by: self.disposeBag)
+
+        self.favoritesVM
+            .state$
+            .map { $0.isRefreshing }
+            .filter { !$0 }
+            .drive(onNext: { [weak refreshControl]_ in
+                refreshControl?.endRefreshing()
+            })
+            .disposed(by: self.disposeBag)
+
+
+        self.favoritesVM
+            .singleEvent$
+            .emit(onNext: { event in
+                let snackbarMessage = MDCSnackbarMessage.init()
+
+                switch event {
+                case .removedFromFavorites(let item):
+                    snackbarMessage.text = "Removed '\(item.title ?? "N/A")' from favorites"
+                case .removeFromFavoritesError(let item):
+                    snackbarMessage.text = "Error when remove '\(item.title ?? "N/A")' from favorites"
+                }
+
+                MDCSnackbarManager.show(snackbarMessage)
+            })
+            .disposed(by: self.disposeBag)
 
         self.favoritesVM
             .process(intent$: .merge([
@@ -106,7 +164,11 @@ class FavoritesVC: UIViewController {
                         .withLatestFrom(items$) { indexPath, items in
                             items[indexPath.row]
                         }
-                        .map { .removeFavorite($0) }
+                        .map { .removeFavorite($0) },
+                    self.refreshControl
+                        .rx
+                        .controlEvent(.valueChanged)
+                        .map { .refresh }
                     ]))
             .disposed(by: self.disposeBag)
     }
