@@ -40,7 +40,7 @@ class FavoritesVM: MviViewModelType {
             .favoritedIds()
             .flatMapLatest { [detailInteractor] ids in
                 detailInteractor.getBooksBy(ids: ids)
-            }
+        }
 
         let refreshChange$ = self.intentS
             .filter { intent in
@@ -50,19 +50,33 @@ class FavoritesVM: MviViewModelType {
             .withLatestFrom(self.detailInteractor.favoritedIds())
             .flatMapFirst { [detailInteractor] ids in
                 detailInteractor.refresh(ids: ids)
-            }
+        }
 
         Observable.merge([booksChange$, refreshChange$])
             .scan(FavoritesVM.initialState, accumulator: FavoritesVM.reducer)
             .distinctUntilChanged()
             .bind(to: self.viewStateS)
             .disposed(by: self.disposeBag)
+
+        self.intentS
+            .compactMap { intent -> FavoritesItem? in
+                if case .removeFavorite(let item) = intent {
+                    return item
+                } else {
+                    return nil
+                }
+            }
+            .concatMap { [detailInteractor] in
+                detailInteractor.removeFavorite(item: $0)
+            }
+            .subscribe(onNext: { event in })
+            .disposed(by: self.disposeBag)
     }
 
     deinit {
         print("FavoritesVM::deinit")
     }
-    
+
     static func reducer(vs: FavoritesViewState, change: FavoritesPartialChange) -> FavoritesViewState {
         print(change)
         switch change {

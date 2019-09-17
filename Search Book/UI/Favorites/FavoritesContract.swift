@@ -12,7 +12,7 @@ import RxSwift
 // MARK: - Intent
 enum FavoritesIntent {
     case refresh
-    case removeFavorite
+    case removeFavorite(FavoritesItem)
 }
 
 // MARK: - View state
@@ -57,9 +57,22 @@ extension FavoritesItem {
         self.title = b.title
         self.subtitle = b.subtitle
         self.thumbnail = b.thumbnail
-        
+
         self.isLoading = false
         self.error = nil
+    }
+
+    func toDomain() -> Book {
+        return Book(
+            id: self.id,
+            title: self.title,
+            subtitle: self.subtitle,
+            authors: nil,
+            thumbnail: self.thumbnail,
+            largeImage: nil,
+            description: nil,
+            publishedDate: nil
+        )
     }
 }
 
@@ -67,6 +80,7 @@ enum FavoritesError: Equatable {
     case networkError
     case serverResponseError(Int, String)
     case unexpectedError
+    case areadyRemovedFromFavorited(FavoritesItem)
 }
 
 extension FavoritesError {
@@ -100,7 +114,8 @@ enum FavoritesPartialChange {
 
 // MARK: - Single event
 enum FavoritesSingleEvent {
-
+    case removedFromFavorites(FavoritesItem)
+    case removeFromFavoritesError(FavoritesItem, FavoritesError)
 }
 
 // MARK: - Interactor
@@ -108,4 +123,5 @@ protocol FavoritesInteractor {
     func favoritedIds() -> Observable<Set<String>>
     func getBooksBy(ids: Set<String>) -> Observable<FavoritesPartialChange>
     func refresh(ids: Set<String>) -> Observable<FavoritesPartialChange>
+    func removeFavorite(item: FavoritesItem) -> Single<FavoritesSingleEvent>
 }

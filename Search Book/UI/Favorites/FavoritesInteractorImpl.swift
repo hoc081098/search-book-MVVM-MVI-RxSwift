@@ -49,4 +49,21 @@ class FavoritesInteractorImpl: FavoritesInteractor {
                 .just(.refreshError(.init(from: error)))
             }
     }
+    
+    func removeFavorite(item: FavoritesItem) -> Single<FavoritesSingleEvent> {
+        return Single
+            .deferred {
+                let result = self.favBooksRepo.toggleFavorited(book: item.toDomain())
+                return .just(result)
+            }
+            .map { (result: ToggleFavoritedResult) -> FavoritesSingleEvent in
+                if result.added {
+                    return .removeFromFavoritesError(item, .areadyRemovedFromFavorited(item))
+                } else {
+                    return .removedFromFavorites(item)
+                }
+        }
+    }
+    
+    
 }

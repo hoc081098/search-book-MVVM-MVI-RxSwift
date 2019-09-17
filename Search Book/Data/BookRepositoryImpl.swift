@@ -34,7 +34,7 @@ class BookRepositoryImpl: BookRepository {
     }
 
     private var cached = [String: (Book, Date)]()
-    private static let timeoutInSeconds: TimeInterval = 30
+    private static let timeoutInSeconds: TimeInterval = 60 * 5 // 5 minutes
 
     private func getBookByIdWithNetworkPolicy(id: String) -> Single<Book> {
         return bookApi

@@ -213,8 +213,8 @@ class HomeVC: UIViewController {
             .map { String($0.favCount) }
             .distinctUntilChanged()
             .startWith("0")
-            .drive(onNext: { [weak labelFavCount] count in
-                labelFavCount.map {
+            .drive(onNext: { [weak self] count in
+                self?.labelFavCount.map {
                     $0.layer.removeAnimation(forKey: "pulse")
                     $0.text = count
                     let animation = CAKeyframeAnimation(keyPath: "transform.scale").apply {

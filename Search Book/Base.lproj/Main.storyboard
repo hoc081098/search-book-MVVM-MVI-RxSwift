@@ -357,22 +357,60 @@
                                 <rect key="frame" x="0.0" y="20" width="375" height="647"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="favorites_cell" textLabel="qHO-Ua-WdF" style="IBUITableViewCellStyleDefault" id="qIV-Ne-gH6">
-                                        <rect key="frame" x="0.0" y="28" width="375" height="44"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="favorites_cell" rowHeight="203" id="qIV-Ne-gH6" customClass="FavoritesCell" customModule="Search_Book" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="28" width="375" height="203"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="qIV-Ne-gH6" id="COw-gI-fLW">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="qIV-Ne-gH6" id="COw-gI-fLW">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="202.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="qHO-Ua-WdF">
-                                                    <rect key="frame" x="15" y="0.0" width="345" height="43.5"/>
-                                                    <autoresizingMask key="autoresizingMask"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="kCD-Y6-vz7">
+                                                    <rect key="frame" x="247" y="8" width="120" height="180"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="120" id="VIG-My-7o7"/>
+                                                        <constraint firstAttribute="height" constant="180" id="ojI-aa-sdS"/>
+                                                    </constraints>
+                                                </imageView>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Title" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YdP-lw-Lvp">
+                                                    <rect key="frame" x="8" y="59" width="231" height="21.5"/>
+                                                    <fontDescription key="fontDescription" name="Thonburi-Bold" family="Thonburi" pointSize="16"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Xkj-0b-ac5">
+                                                    <rect key="frame" x="8" y="34" width="359" height="1"/>
+                                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="1" id="3oZ-si-fAV"/>
+                                                    </constraints>
+                                                </view>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Subtitle" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CDS-Sd-aJ9">
+                                                    <rect key="frame" x="8" y="104" width="231" height="19"/>
+                                                    <fontDescription key="fontDescription" name="Thonburi" family="Thonburi" pointSize="14"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
+                                            <constraints>
+                                                <constraint firstItem="kCD-Y6-vz7" firstAttribute="top" secondItem="COw-gI-fLW" secondAttribute="top" constant="8" id="6bT-oL-iWB"/>
+                                                <constraint firstAttribute="trailing" secondItem="kCD-Y6-vz7" secondAttribute="trailing" constant="8" id="KAO-VA-EY4"/>
+                                                <constraint firstItem="YdP-lw-Lvp" firstAttribute="bottom" secondItem="Xkj-0b-ac5" secondAttribute="top" constant="-8" id="U2T-YV-wqK"/>
+                                                <constraint firstItem="kCD-Y6-vz7" firstAttribute="leading" secondItem="YdP-lw-Lvp" secondAttribute="trailing" constant="8" id="ULU-Rg-H1J"/>
+                                                <constraint firstItem="CDS-Sd-aJ9" firstAttribute="top" secondItem="Xkj-0b-ac5" secondAttribute="bottom" constant="8" id="WMl-GN-D7O"/>
+                                                <constraint firstItem="YdP-lw-Lvp" firstAttribute="leading" secondItem="COw-gI-fLW" secondAttribute="leading" constant="8" id="ZW4-JY-6YP"/>
+                                                <constraint firstItem="kCD-Y6-vz7" firstAttribute="leading" secondItem="CDS-Sd-aJ9" secondAttribute="trailing" constant="8" id="dij-zJ-M3g"/>
+                                                <constraint firstAttribute="trailing" secondItem="Xkj-0b-ac5" secondAttribute="trailing" constant="8" id="gdy-sL-dMM"/>
+                                                <constraint firstAttribute="bottom" secondItem="kCD-Y6-vz7" secondAttribute="bottom" constant="8" id="k0c-ke-4lT"/>
+                                                <constraint firstItem="Xkj-0b-ac5" firstAttribute="leading" secondItem="COw-gI-fLW" secondAttribute="leading" constant="8" id="leV-cG-0fw"/>
+                                                <constraint firstItem="CDS-Sd-aJ9" firstAttribute="leading" secondItem="COw-gI-fLW" secondAttribute="leading" constant="8" id="qYt-Ry-a2t"/>
+                                                <constraint firstItem="Xkj-0b-ac5" firstAttribute="centerY" secondItem="COw-gI-fLW" secondAttribute="centerY" id="ugu-Wi-luz"/>
+                                            </constraints>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="imageThumbnail" destination="kCD-Y6-vz7" id="3Mh-bk-d0P"/>
+                                            <outlet property="labelSubtitle" destination="CDS-Sd-aJ9" id="cLP-oE-s8T"/>
+                                            <outlet property="labelTitle" destination="YdP-lw-Lvp" id="cxq-ZQ-bqe"/>
+                                        </connections>
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
@@ -392,7 +430,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="b7a-FI-Gju" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3128" y="-1004"/>
+            <point key="canvasLocation" x="3127.1999999999998" y="-1004.3478260869566"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="c2x-cZ-der">
