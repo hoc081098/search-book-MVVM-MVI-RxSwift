@@ -11,13 +11,13 @@ import RxCocoa
 import RxSwift
 
 protocol MviViewModelType {
-    associatedtype ViewState
-    associatedtype ViewIntent
-    associatedtype SingleEvent
-    
-    var state$: Driver<ViewState> { get }
-    
-    var singleEvent$: Signal<SingleEvent> { get }
-    
-    func process(intent$: Observable<ViewIntent>) -> Disposable
+  associatedtype ViewState
+  associatedtype ViewIntent
+  associatedtype SingleEvent
+
+  var state$: Driver<ViewState> { get }
+
+  var singleEvent$: Signal<SingleEvent> { get }
+
+  func process(intent$: Observable<ViewIntent>) -> Disposable
 }

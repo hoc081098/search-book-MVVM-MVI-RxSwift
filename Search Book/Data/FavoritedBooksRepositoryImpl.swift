@@ -10,46 +10,43 @@ import Foundation
 import RxCocoa
 import RxSwift
 
+private extension String {
+  static let favIdsKey = "fav_ids"
+}
+
 class FavoritedBooksRepositoryImpl: FavoritedBooksRepository {
-    private let userDefaults: UserDefaults
-    private static let favIdsKey = "fav_ids"
+  private let userDefaults: UserDefaults
 
-    init(userDefaults: UserDefaults) {
-        self.userDefaults = userDefaults
-    }
+  private lazy var favoritedIds$ = self.userDefaults.rx
+    .observe([String].self, .favIdsKey)
+    .distinctUntilChanged()
+    .map { ids in Set(ids ?? []) }
+    .share(replay: 1, scope: .whileConnected)
 
-    func toggleFavorited(book: Book) -> ToggleFavoritedResult {
-        let ids = userDefaults.stringArray(forKey: FavoritedBooksRepositoryImpl.favIdsKey) ?? []
+  private let userDefaultsScheduler = SerialDispatchQueueScheduler(qos: .userInitiated)
+
+  init(userDefaults: UserDefaults) {
+    self.userDefaults = userDefaults
+  }
+
+  func toggleFavorited(book: Book) -> Single<DomainResult<ToggleFavoritedResult>> {
+    Single
+      .deferred {
+        let ids = self.userDefaults.stringArray(forKey: .favIdsKey) ?? []
         let bookId = book.id
+        let contains = ids.contains(bookId)
 
-        if ids.contains(bookId) {
-            userDefaults.set(
-                ids.filter { $0 != book.id },
-                forKey: FavoritedBooksRepositoryImpl.favIdsKey
-            )
+        self.userDefaults.set(
+          contains
+            ? ids.filter { $0 != bookId }
+            : ids + CollectionOfOne(bookId),
+          forKey: .favIdsKey
+        )
 
-            return ToggleFavoritedResult(
-                added: false,
-                book: book
-            )
-        } else {
-            userDefaults.set(
-                ids + [book.id],
-                forKey: FavoritedBooksRepositoryImpl.favIdsKey
-            )
+        return .just(.success(.init(added: !contains, book: book)))
+      }
+      .subscribeOn(self.userDefaultsScheduler)
+  }
 
-            return ToggleFavoritedResult(
-                added: true,
-                book: book
-            )
-        }
-    }
-
-    func favoritedIds() -> Observable<Set<String>> {
-        return userDefaults.rx
-            .observe([String].self, FavoritedBooksRepositoryImpl.favIdsKey)
-            .distinctUntilChanged()
-            .map { ids in Set(ids ?? []) }
-            .share(replay: 1, scope: .whileConnected)
-    }
+  func favoritedIds() -> Observable<Set<String>> { favoritedIds$ }
 }

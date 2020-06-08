@@ -9,6 +9,6 @@
 import Foundation
 
 enum CachePolicy {
-    case networkOnly
-    case localFirst
+  case networkOnly
+  case localFirst
 }

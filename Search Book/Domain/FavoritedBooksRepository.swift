@@ -10,12 +10,12 @@ import Foundation
 import RxSwift
 
 struct ToggleFavoritedResult {
-    let added: Bool
-    let book: Book
+  let added: Bool
+  let book: Book
 }
 
 protocol FavoritedBooksRepository {
-    func toggleFavorited(book: Book) -> ToggleFavoritedResult
+  func toggleFavorited(book: Book) -> Single<DomainResult<ToggleFavoritedResult>>
 
-    func favoritedIds() -> Observable<Set<String>>
+  func favoritedIds() -> Observable<Set<String>>
 }

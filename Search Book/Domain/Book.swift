@@ -9,12 +9,12 @@
 import Foundation
 
 struct Book {
-    let id: String
-    let title: String?
-    let subtitle: String?
-    let authors: [String]?
-    let thumbnail: String?
-    let largeImage: String?
-    let description: String?
-    let publishedDate: String?
+  let id: String
+  let title: String?
+  let subtitle: String?
+  let authors: [String]?
+  let thumbnail: String?
+  let largeImage: String?
+  let description: String?
+  let publishedDate: String?
 }
