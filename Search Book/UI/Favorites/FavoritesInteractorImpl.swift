@@ -49,19 +49,23 @@ class FavoritesInteractorImpl: FavoritesInteractor {
       .startWith(.refreshing)
       .catchError { .just(.refreshError($0.toDomainError)) }
   }
-  
+
   func removeFavorite(item: FavoritesItem) -> Single<FavoritesSingleEvent> {
-     return self.favBooksRepo
-       .toggleFavorited(book: item.toDomain())
-       .map { result -> FavoritesSingleEvent in
-         result.fold(
-           onSuccess: {
-             $0.added
-               ? .removeFromFavoritesError(item)
-               : .removedFromFavorites(item)
-           },
-           onFailure: { _ in .removeFromFavoritesError(item) }
-         )
-     }
-   }
+    return self.favBooksRepo
+      .toggleFavorited(book: item.toDomain())
+      .map { result -> FavoritesSingleEvent in
+        result.fold(
+          onSuccess: {
+            $0.added
+              ? .removeFromFavoritesError(item)
+              : .removedFromFavorites(item)
+          },
+          onFailure: { _ in .removeFromFavoritesError(item) }
+        )
+    }
+  }
+
+  deinit {
+    print("\(self)::deinit")
+  }
 }

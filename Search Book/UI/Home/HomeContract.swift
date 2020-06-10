@@ -175,7 +175,7 @@ extension HomePartialChange: CustomStringConvertible {
 
 extension HomePartialChange {
   func reduce(state vs: HomeViewState) -> HomeViewState {
-    print("Reduce: change=\(self)")
+    print("HomePartialChange::reduce change=\(self)")
 
     switch self {
     case .loadingFirstPage:

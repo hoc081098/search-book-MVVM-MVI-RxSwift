@@ -64,4 +64,8 @@ class DetailInteractorImpl: DetailInteractor {
         )
     }
   }
+
+  deinit {
+    print("\(self)::deinit")
+  }
 }

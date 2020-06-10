@@ -100,9 +100,28 @@ enum FavoritesPartialChange {
   case refreshError(AppError)
 }
 
+extension FavoritesPartialChange: CustomStringConvertible {
+  var description: String {
+    switch self {
+    case .ids:
+      return "ids"
+    case .bookLoaded:
+      return "bookLoaded"
+    case .bookError:
+      return "bookError"
+    case .refreshing:
+      return "refreshing"
+    case .refreshSuccess:
+      return "refreshSuccess"
+    case .refreshError:
+      return "refreshError"
+    }
+  }
+}
+
 extension FavoritesPartialChange {
   func reduce(state vs: FavoritesViewState) -> FavoritesViewState {
-    print("Reduce: change=" + String(describing: self))
+    print("FavoritesPartialChange::reduce change=\(self)")
 
     switch self {
     case .bookLoaded(let book):

@@ -71,4 +71,8 @@ class HomeInteractorImpl: HomeInteractor {
   func favoritedIds() -> Observable<Set<String>> {
     self.favoritedBooksRepository.favoritedIds()
   }
+
+  deinit {
+    print("\(self)::deinit")
+  }
 }

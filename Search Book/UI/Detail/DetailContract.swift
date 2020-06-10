@@ -184,7 +184,7 @@ extension DetailPartialChange: CustomStringConvertible {
 
 extension DetailPartialChange {
   func reduce(state vs: DetailViewState) -> DetailViewState {
-    print("Reduce chaneg=\(self)")
+    print("DetailPartialChange::reduce change=\(self)")
 
     switch self {
     case .refreshing:
