@@ -44,7 +44,7 @@ private extension FavoritesVC {
       configureCell: {
         dataSource, tableView, indexPath, item -> UITableViewCell in
         (tableView.dequeueReusableCell(withIdentifier: "FavoritesCell", for: indexPath) as! FavoritesCell)
-          .apply { $0.bind(item, at: indexPath.row) }
+          .apply { $0.bind(item) }
       },
       canEditRowAtIndexPath: { _, _ in true }
     )

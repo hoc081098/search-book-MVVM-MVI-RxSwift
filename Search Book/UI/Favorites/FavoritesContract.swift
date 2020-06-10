@@ -147,9 +147,11 @@ extension FavoritesPartialChange {
     case .refreshError(_):
       return vs.copyWith(books: vs.books ?? [], isRefreshing: false)
     case .ids(let ids):
+      let books = Dictionary.init(uniqueKeysWithValues: vs.books?.map { ($0.id, $0) } ?? [])
+
       return vs.copyWith(books:
         ids.map { id in
-          FavoritesItem.init(
+          books[id] ?? FavoritesItem.init(
             isLoading: true,
             error: nil,
             id: id,
@@ -188,11 +190,11 @@ enum FavoritesSingleEvent {
 
 // MARK: - Interactor
 protocol FavoritesInteractor {
-  func favoritedIds() -> Observable<Set<String>>
+  func favoritedIds() -> Observable<[String]>
 
-  func getBooksBy(ids: Set<String>) -> Observable<FavoritesPartialChange>
+  func getBooksBy(ids: [String]) -> Observable<FavoritesPartialChange>
 
-  func refresh(ids: Set<String>) -> Observable<FavoritesPartialChange>
+  func refresh(ids: [String]) -> Observable<FavoritesPartialChange>
 
   func removeFavorite(item: FavoritesItem) -> Single<FavoritesSingleEvent>
 }

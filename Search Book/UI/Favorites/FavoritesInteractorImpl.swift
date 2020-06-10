@@ -18,11 +18,11 @@ class FavoritesInteractorImpl: FavoritesInteractor {
     self.booksRepo = booksRepo
   }
 
-  func favoritedIds() -> Observable<Set<String>> {
-    self.favBooksRepo.favoritedIds()
+  func favoritedIds() -> Observable<[String]> {
+    self.favBooksRepo.favoritedIds().map { $0.sorted() }
   }
 
-  func getBooksBy(ids: Set<String>) -> Observable<FavoritesPartialChange> {
+  func getBooksBy(ids: [String]) -> Observable<FavoritesPartialChange> {
     Observable.from(ids)
       .flatMap { [booksRepo] id -> Observable<FavoritesPartialChange> in
         booksRepo
@@ -37,7 +37,7 @@ class FavoritesInteractorImpl: FavoritesInteractor {
       .startWith(.ids(Array(ids)))
   }
 
-  func refresh(ids: Set<String>) -> Observable<FavoritesPartialChange> {
+  func refresh(ids: [String]) -> Observable<FavoritesPartialChange> {
     let books$: [Observable<FavoritesItem>] = ids.map { [booksRepo] id in
       booksRepo
         .getBook(by: id, with: .networkOnly)
@@ -45,7 +45,7 @@ class FavoritesInteractorImpl: FavoritesInteractor {
         .takeLast(1)
     }
     return Observable
-      .combineLatest(books$) { books in FavoritesPartialChange.refreshSuccess(books) }
+      .zip(books$) { books in FavoritesPartialChange.refreshSuccess(books) }
       .startWith(.refreshing)
       .catchError { .just(.refreshError($0.toDomainError)) }
   }

@@ -19,8 +19,8 @@ class FavoritesCell: UITableViewCell {
     self.selectionStyle = .none
   }
 
-  func bind(_ item: FavoritesItem, at row: Int) {
-    let title: String = {
+  func bind(_ item: FavoritesItem) {
+    self.labelTitle.text = {
       if item.isLoading {
         return "Loading..."
       }
@@ -29,8 +29,6 @@ class FavoritesCell: UITableViewCell {
       }
       return item.title ?? "N/A"
     }()
-    self.labelTitle.text = "\(row + 1) - \(title)"
-
 
     self.labelSubtitle.text = {
       if item.isLoading {
