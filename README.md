@@ -5,4 +5,4 @@
 
 | Demo 1  | Demo 2 |
 | ------------- | ------------- |
-| <img src="https://github.com/hoc081098/hoc081098.github.io/blob/master/demo1.gif?raw=true" width="360">  | <img src="https://github.com/hoc081098/hoc081098.github.io/blob/master/demo2.gif?raw=true" width="360">  |
+| <img src="https://github.com/hoc081098/hoc081098.github.io/blob/master/demo1.gif?raw=true" heigth="360">  | <img src="https://github.com/hoc081098/hoc081098.github.io/blob/master/demo2.gif?raw=true" heigth="360">  |
