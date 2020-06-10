@@ -19,26 +19,33 @@ class DetailInteractorImpl: DetailInteractor {
   }
 
   func refresh(id: String) -> Observable<DetailPartialChange> {
-    return bookRepository
-      .getBookBy(id: id, with: .localFirst)
-      .delay(.seconds(2), scheduler: MainScheduler.instance)
-      .map(BookDetail.init(fromDomain:))
-      .map { .refreshSuccess($0) }
+    bookRepository
+      .getBook(by: id, with: .localFirst)
+      .delay(.milliseconds(1_500), scheduler: MainScheduler.instance)
+      .map { result in
+        result.fold(
+          onSuccess: { .refreshSuccess(.init(fromDomain: $0)) },
+          onFailure: { .refreshError($0) }
+        )
+      }
       .startWith(.refreshing)
-      .catchError { (error) -> Observable<DetailPartialChange> in .just(.refreshError(.init(from: error))) }
   }
 
   func getDetailBy(id: String) -> Observable<DetailPartialChange> {
-    return bookRepository
-      .getBookBy(id: id, with: .networkOnly)
-      .map(BookDetail.init(fromDomain:))
-      .map { .detailLoaded($0) }
+    bookRepository
+      .getBook(by: id, with: .networkOnly)
+      .map { result in
+        result.fold(
+          onSuccess: { .detailLoaded(.init(fromDomain: $0)) },
+          onFailure: { .detailError($0) }
+        )
+      }
       .startWith(.loading)
-      .catchError { (error) -> Observable<DetailPartialChange> in .just(.detailError(.init(from: error))) }
+
   }
 
   func favoritedIds() -> Observable<Set<String>> {
-    return self.favBookRepo.favoritedIds()
+    self.favBookRepo.favoritedIds()
   }
 
   func toggleFavorited(detail: BookDetail) -> Single<DetailSingleEvent> {
@@ -48,16 +55,12 @@ class DetailInteractorImpl: DetailInteractor {
       .toggleFavorited(book: book)
       .map { result -> DetailSingleEvent in
         result.fold(
-          onSuccess: { toggleResult in
-            if toggleResult.added {
-              return .addedToFavorited(.init(fromDomain: book))
-            } else {
-              return .removedFromFavorited(.init(fromDomain: book))
-            }
+          onSuccess: {
+            $0.added
+              ? .addedToFavorited(detail)
+              : .removedFromFavorited(detail)
           },
-          onFailure: { error in
-              .toggleFavoritedError(.init(from: error), .init(fromDomain: book))
-          }
+          onFailure: { .toggleFavoritedError($0, detail) }
         )
     }
   }

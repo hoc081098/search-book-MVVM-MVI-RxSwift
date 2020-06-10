@@ -10,7 +10,7 @@ import Foundation
 import RxSwift
 
 protocol BookRepository {
-  func searchBook(query: String, startIndex: Int) -> Single<[Book]>
+  func searchBook(by query: String, and startIndex: Int) -> Single<DomainResult<[Book]>>
 
-  func getBookBy(id: String, with: CachePolicy) -> Observable<Book>
+  func getBook(by id: String, with cachePolicy: CachePolicy) -> Observable<DomainResult<Book>>
 }

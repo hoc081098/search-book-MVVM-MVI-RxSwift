@@ -2,7 +2,7 @@
 //  HomeInteractorImpl.swift
 //  Search Book
 //
-//  Created by HOANG TAN DUY on 9/3/19.
+//  Created by Petrus Nguyễn Thái Học on 9/3/19.
 //  Copyright © 2019 Petrus Nguyễn Thái Học. All rights reserved.
 //
 
@@ -20,36 +20,40 @@ class HomeInteractorImpl: HomeInteractor {
   }
 
   func searchBook(query: String) -> Observable<HomePartialChange> {
-    print("Search \(query)")
-    return self.bookRepository
-      .searchBook(query: query, startIndex: 0)
-      .do(onSuccess: { _ in print("Search \(Thread.current)") })
+    self
+      .bookRepository
+      .searchBook(by: query, and: 0)
       .asObservable()
-      .map { books in books.map { book in HomeBook(fromDomain: book) } }
-      .map { books in .firstPageLoaded(books: books, searchTerm: query) }
+      .map { result -> HomePartialChange in
+        result.fold(
+          onSuccess: { domainBooks in
+            let books = domainBooks.map(HomeBook.init(fromDomain:))
+            return .firstPageLoaded(books: books, searchTerm: query)
+          },
+          onFailure: { .loadFirstPageError(error: $0, searchTerm: query) }
+        )
+      }
       .startWith(.loadingFirstPage)
-      .catchError { (error: Error) -> Observable<HomePartialChange> in
-          .just(.loadFirstPageError(error: .init(from: error), searchTerm: query))
-    }
   }
 
   func loadNextPage(query: String, startIndex: Int) -> Observable<HomePartialChange> {
-    print("Load next page \(query), \(startIndex)")
-    return self.bookRepository
-      .searchBook(query: query, startIndex: startIndex)
-      .do(onSuccess: { _ in print("Search \(Thread.current)") })
+    self.bookRepository
+      .searchBook(by: query, and: startIndex)
       .asObservable()
-      .map { books in books.map { book in HomeBook(fromDomain: book) } }
-      .map { books in .nextPageLoaded(books: books, searchTerm: query) }
+      .map { result -> HomePartialChange in
+        result.fold(
+          onSuccess: { domainBooks in
+            let books = domainBooks.map(HomeBook.init(fromDomain:))
+            return .nextPageLoaded(books: books, searchTerm: query)
+          },
+          onFailure: { .loadNextPageError(error: $0, searchTerm: query) }
+        )
+      }
       .startWith(.loadingNextPage)
-      .catchError { (error: Error) -> Observable<HomePartialChange> in
-          .just(.loadNextPageError(error: .init(from: error), searchTerm: query))
-
-    }
   }
 
   func toggleFavorited(book: HomeBook) -> Single<HomeSingleEvent> {
-    return self
+    self
       .favoritedBooksRepository
       .toggleFavorited(book: book.toDomain())
       .map { result -> HomeSingleEvent in
@@ -59,12 +63,12 @@ class HomeInteractorImpl: HomeInteractor {
               ? .addedToFavorited(book)
               : .removedFromFavorited(book)
           },
-          onFailure: { error in .toggleFavoritedError(.init(from: error), book) }
+          onFailure: { .toggleFavoritedError($0, book) }
         )
     }
   }
 
   func favoritedIds() -> Observable<Set<String>> {
-    return favoritedBooksRepository.favoritedIds()
+    self.favoritedBooksRepository.favoritedIds()
   }
 }

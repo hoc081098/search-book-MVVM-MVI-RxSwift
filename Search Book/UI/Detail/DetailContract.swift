@@ -10,7 +10,7 @@ import Foundation
 import RxSwift
 
 // MARK: - Intent
-enum DetailIntent {
+enum DetailIntent: Equatable {
   case initial(InitialBookDetail)
   case refresh
   case toggleFavorite
@@ -20,21 +20,28 @@ enum DetailIntent {
 struct DetailViewState: Equatable {
   let isLoading: Bool
   let isRefreshing: Bool
-  let error: DetailError?
+  let error: AppError?
   let detail: BookDetail?
 
   func copyWith(
     isLoading: Bool? = nil,
     isRefreshing: Bool? = nil,
-    error: DetailError? = nil,
+    error: AppError? = nil,
     detail: BookDetail? = nil
   ) -> DetailViewState {
-    return DetailViewState(
-      isLoading: isLoading ?? self.isLoading,
-      isRefreshing: isRefreshing ?? self.isRefreshing,
-      error: error,
-      detail: detail ?? self.detail
-    )
+      .init(
+        isLoading: isLoading ?? self.isLoading,
+        isRefreshing: isRefreshing ?? self.isRefreshing,
+        error: error,
+        detail: detail ?? self.detail
+      )
+  }
+
+  func copyWith(favoritedIds ids: Set<String>) -> DetailViewState {
+    if let detail = self.detail {
+      return self.copyWith(detail: detail.withFavorited(ids.contains(detail.id)))
+    }
+    return self
   }
 }
 
@@ -129,79 +136,45 @@ extension BookDetail {
   }
 }
 
-enum DetailError: Equatable {
-  case networkError
-  case serverResponseError(Int, String)
-  case unexpectedError
-
-  var message: String {
-    switch self {
-    case .networkError:
-      return "Network error"
-    case .serverResponseError(_, let message):
-      return "Server response error: \(message)"
-    case .unexpectedError:
-      return "An unexpected error"
-    }
-  }
-}
-
-extension DetailError {
-  init(from error: Error) {
-    if let appError = error as? AppError {
-      switch appError {
-      case .networkError:
-        self = .networkError
-      case .serverResponseError(let code, let message):
-        self = .serverResponseError(code, message)
-      case .unexpectedError:
-        self = .unexpectedError
-      }
-    } else {
-      self = .unexpectedError
-    }
-  }
-}
-
-
 // MARK: - Event
 enum DetailSingleEvent {
   case addedToFavorited(BookDetail)
   case removedFromFavorited(BookDetail)
-  case toggleFavoritedError(DetailError, BookDetail)
+  case toggleFavoritedError(AppError, BookDetail)
 
   case refreshSuccess
-  case refreshError(DetailError)
+  case refreshError(AppError)
 
-  case getDetailError(DetailError)
+  case getDetailError(AppError)
 }
 
 // MARK: - Partial Change
 enum DetailPartialChange {
 
   case refreshing
-  case refreshError(DetailError)
+  case refreshError(AppError)
   case refreshSuccess(BookDetail)
 
   case initialLoaded(InitialBookDetail)
   case loading
   case detailLoaded(BookDetail)
-  case detailError(DetailError)
+  case detailError(AppError)
+}
 
-  var name: String {
+extension DetailPartialChange: CustomStringConvertible {
+  var description: String {
     switch self {
-
     case .refreshing:
       return "refreshing"
-    case .refreshError(_):
+    case .refreshError:
       return "refreshError"
-    case .initialLoaded(_):
+    case .initialLoaded:
       return "initialLoaded"
-    case .detailLoaded(_):
+    case .detailLoaded:
       return "detailLoaded"
     case .loading:
       return "loading"
-    case .detailError(_):
+    case .detailError:
       return "detailError"
     case .refreshSuccess:
       return "refreshSuccess"
@@ -209,10 +182,50 @@ enum DetailPartialChange {
   }
 }
 
+extension DetailPartialChange {
+  func reduce(state vs: DetailViewState) -> DetailViewState {
+    print("Reduce chaneg=\(self)")
+
+    switch self {
+    case .refreshing:
+      return vs.copyWith(isRefreshing: true)
+    case .refreshError:
+      return vs.copyWith(isRefreshing: false)
+    case .initialLoaded(let initial):
+      return vs.copyWith(
+        isLoading: false,
+        error: nil,
+        detail: vs.detail ?? .init(fromInitial: initial)
+      )
+    case .detailLoaded(let detail):
+      return vs.copyWith(
+        isLoading: false,
+        error: nil,
+        detail: detail
+      )
+    case .loading:
+      return vs.copyWith(isLoading: true)
+    case .detailError(let error):
+      return vs.copyWith(
+        isLoading: false,
+        error: error
+      )
+    case .refreshSuccess(let detail):
+      return vs.copyWith(
+        isRefreshing: false,
+        detail: detail
+      )
+    }
+  }
+}
+
 // MARK: - Interactor
 protocol DetailInteractor {
   func refresh(id: String) -> Observable<DetailPartialChange>
+
   func getDetailBy(id: String) -> Observable<DetailPartialChange>
+
   func favoritedIds() -> Observable<Set<String>>
+
   func toggleFavorited(detail: BookDetail) -> Single<DetailSingleEvent>
 }

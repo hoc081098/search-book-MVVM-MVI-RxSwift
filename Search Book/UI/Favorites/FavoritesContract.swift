@@ -8,9 +8,10 @@
 
 import Foundation
 import RxSwift
+import RxDataSources
 
 // MARK: - Intent
-enum FavoritesIntent {
+enum FavoritesIntent: Equatable {
   case refresh
   case removeFavorite(FavoritesItem)
 }
@@ -20,14 +21,20 @@ struct FavoritesViewState: Equatable {
   let books: [FavoritesItem]?
   let isRefreshing: Bool
 
-  func copyWith(books: [FavoritesItem], isRefreshing: Bool? = nil) -> FavoritesViewState {
-    return .init(books: books, isRefreshing: isRefreshing ?? self.isRefreshing)
+  func copyWith(
+    books: [FavoritesItem],
+    isRefreshing: Bool? = nil
+  ) -> FavoritesViewState {
+      .init(
+        books: books,
+        isRefreshing: isRefreshing ?? self.isRefreshing
+      )
   }
 }
 
 struct FavoritesItem: Equatable {
   let isLoading: Bool
-  let error: FavoritesError?
+  let error: AppError?
 
   let id: String
   let title: String?
@@ -36,20 +43,24 @@ struct FavoritesItem: Equatable {
 
   func copyWith(
     isLoading: Bool? = nil,
-    error: FavoritesError? = nil,
+    error: AppError? = nil,
     title: String? = nil,
     subtitle: String? = nil,
     thumbnail: String? = nil
   ) -> FavoritesItem {
-    return .init(
-      isLoading: isLoading ?? self.isLoading,
-      error: error,
-      id: self.id,
-      title: title ?? self.title,
-      subtitle: subtitle ?? self.subtitle,
-      thumbnail: thumbnail ?? self.thumbnail
-    )
+      .init(
+        isLoading: isLoading ?? self.isLoading,
+        error: error,
+        id: self.id,
+        title: title ?? self.title,
+        subtitle: subtitle ?? self.subtitle,
+        thumbnail: thumbnail ?? self.thumbnail
+      )
   }
+}
+
+extension FavoritesItem: IdentifiableType {
+  var identity: String { self.id }
 }
 
 extension FavoritesItem {
@@ -64,7 +75,7 @@ extension FavoritesItem {
   }
 
   func toDomain() -> Book {
-    return Book(
+    Book(
       id: self.id,
       title: self.title,
       subtitle: self.subtitle,
@@ -77,40 +88,77 @@ extension FavoritesItem {
   }
 }
 
-enum FavoritesError: Equatable {
-  case networkError
-  case serverResponseError(Int, String)
-  case unexpectedError
-}
-
-extension FavoritesError {
-  init(from error: Error) {
-    if let appError = error as? AppError {
-      switch appError {
-      case .networkError:
-        self = .networkError
-      case .serverResponseError(let code, let message):
-        self = .serverResponseError(code, message)
-      case .unexpectedError:
-        self = .unexpectedError
-      }
-    } else {
-      self = .unexpectedError
-    }
-  }
-}
-
-
 // MARK: - Partial change
 enum FavoritesPartialChange {
   case ids([String])
 
   case bookLoaded(FavoritesItem)
-  case bookError(FavoritesError, String)
+  case bookError(AppError, String)
 
   case refreshing
   case refreshSuccess([FavoritesItem])
-  case refreshError(FavoritesError)
+  case refreshError(AppError)
+}
+
+extension FavoritesPartialChange {
+  func reduce(state vs: FavoritesViewState) -> FavoritesViewState {
+    print("Reduce: change=" + String(describing: self))
+
+    switch self {
+    case .bookLoaded(let book):
+      return vs.copyWith(books: Self.replace(items: vs.books ?? [], by: book))
+    case .bookError(let error, let id):
+      let books = vs.books!.map { book -> FavoritesItem in
+        if book.id == id {
+          if book.isLoading {
+            return book.copyWith(
+              isLoading: false,
+              error: error
+            )
+          } else {
+            return book
+          }
+        } else {
+          return book
+        }
+      }
+      return vs.copyWith(books: books)
+    case .refreshSuccess(let books):
+      return vs.copyWith(books: books, isRefreshing: false)
+    case .refreshError(_):
+      return vs.copyWith(books: vs.books ?? [], isRefreshing: false)
+    case .ids(let ids):
+      return vs.copyWith(books:
+        ids.map { id in
+          FavoritesItem.init(
+            isLoading: true,
+            error: nil,
+            id: id,
+            title: nil,
+            subtitle: nil,
+            thumbnail: nil)
+      })
+    case .refreshing:
+      return vs.copyWith(books: vs.books ?? [], isRefreshing: true)
+    }
+  }
+
+
+  private static func replace(items: [FavoritesItem], by newItem: FavoritesItem) -> [FavoritesItem] {
+    return items.map { item in
+      if item.id == newItem.id {
+        return item.copyWith(
+          isLoading: false,
+          error: nil,
+          title: newItem.title,
+          subtitle: newItem.subtitle,
+          thumbnail: newItem.thumbnail
+        )
+      } else {
+        return item
+      }
+    }
+  }
 }
 
 // MARK: - Single event

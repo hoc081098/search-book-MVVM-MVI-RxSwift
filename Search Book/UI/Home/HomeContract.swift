@@ -10,7 +10,7 @@ import Foundation
 import RxSwift
 
 // MARK: - Intent
-enum HomeIntent {
+enum HomeIntent: Equatable {
   case search(searchTerm: String)
   case retryLoadFirstPage
   case loadNextPage
@@ -31,52 +31,62 @@ struct HomeViewState: Equatable {
     books: [HomeBook]? = nil,
     favCount: Int? = nil
   ) -> HomeViewState {
-    return HomeViewState(
-      searchTerm: searchTerm ?? self.searchTerm,
-      items: items ?? self.items,
-      books: books ?? self.books,
-      favCount: favCount ?? self.favCount
+      .init(
+        searchTerm: searchTerm ?? self.searchTerm,
+        items: items ?? self.items,
+        books: books ?? self.books,
+        favCount: favCount ?? self.favCount
+      )
+  }
+
+  func copyWith(favoritedIds ids: Set<String>) -> HomeViewState {
+    var books = [HomeBook]()
+
+    let items = self.items.map { item -> HomeItem in
+      switch item {
+      case .book(let book):
+        let copied = book.withFavorited(ids.contains(book.id))
+        books.append(copied)
+        return .book(copied)
+      case .error, .loading:
+        return item
+      }
+    }
+
+    return self.copyWith(
+      items: items,
+      books: books,
+      favCount: ids.count
     )
   }
 }
 
-enum HomeError: Equatable {
-  case networkError
-  case serverResponseError(Int, String)
-  case unexpectedError
-
-  var message: String {
-    switch self {
-    case .networkError:
-      return "Network error"
-    case .serverResponseError(_, let message):
-      return "Server response error: \(message)"
-    case .unexpectedError:
-      return "An unexpected error"
+extension HomeViewState {
+  var shouldLoadNextPage: Bool {
+    !self.books.isEmpty && self.items.allSatisfy { item in
+      if case .book = item { return true }
+      return false
     }
   }
-}
 
-extension HomeError {
-  init(from error: Error) {
-    if let appError = error as? AppError {
-      switch appError {
-      case .networkError:
-        self = .networkError
-      case .serverResponseError(let code, let message):
-        self = .serverResponseError(code, message)
-      case .unexpectedError:
-        self = .unexpectedError
-      }
-    } else {
-      self = .unexpectedError
-    }
+  var shouldRetryFirstPage: Bool {
+    self.books.isEmpty && self.items.contains(where: { item in
+      if case .error(_, true) = item { return true }
+      return false
+    })
+  }
+
+  var shouldRetryNextPage: Bool {
+    !self.books.isEmpty && self.items.contains(where: { item in
+      if case .error(_, false) = item { return true }
+      return false
+    })
   }
 }
 
 enum HomeItem: Equatable {
   case loading
-  case error(HomeError, Bool)
+  case error(AppError, firstPage: Bool)
   case book(HomeBook)
 }
 
@@ -98,26 +108,26 @@ extension HomeBook {
   }
 
   func toDomain() -> Book {
-    return Book(
-      id: id,
-      title: title,
-      subtitle: subtitle,
-      authors: nil,
-      thumbnail: thumbnail,
-      largeImage: nil,
-      description: nil,
-      publishedDate: nil
-    )
+      .init(
+        id: id,
+        title: title,
+        subtitle: subtitle,
+        authors: nil,
+        thumbnail: thumbnail,
+        largeImage: nil,
+        description: nil,
+        publishedDate: nil
+      )
   }
 
   func withFavorited(_ favorited: Bool) -> HomeBook {
-    return HomeBook(
-      id: self.id,
-      title: self.title,
-      subtitle: self.subtitle,
-      thumbnail: self.thumbnail,
-      isFavorited: favorited
-    )
+      .init(
+        id: self.id,
+        title: self.title,
+        subtitle: self.subtitle,
+        thumbnail: self.thumbnail,
+        isFavorited: favorited
+      )
   }
 }
 
@@ -125,8 +135,8 @@ extension HomeBook {
 enum HomeSingleEvent {
   case addedToFavorited(HomeBook)
   case removedFromFavorited(HomeBook)
-  case toggleFavoritedError(HomeError, HomeBook)
-  case loadError(HomeError)
+  case toggleFavoritedError(AppError, HomeBook)
+  case loadError(AppError)
 }
 
 // MARK: - Partial Change
@@ -134,31 +144,73 @@ enum HomePartialChange {
   case initial
 
   case loadingFirstPage
-  case loadFirstPageError(error: HomeError, searchTerm: String)
+  case loadFirstPageError(error: AppError, searchTerm: String)
   case firstPageLoaded(books: [HomeBook], searchTerm: String)
 
   case loadingNextPage
   case nextPageLoaded(books: [HomeBook], searchTerm: String)
-  case loadNextPageError(error: HomeError, searchTerm: String)
+  case loadNextPageError(error: AppError, searchTerm: String)
+}
 
-  var name: String {
-    get {
-      switch self {
-      case .loadingFirstPage:
-        return "loadingFirstPage"
-      case .loadFirstPageError:
-        return "loadFirstPageError"
-      case .firstPageLoaded:
-        return "firstPageLoaded"
-      case .loadingNextPage:
-        return "loadingNextPage"
-      case .nextPageLoaded:
-        return "nextPageLoaded"
-      case .loadNextPageError:
-        return "loadNextPageError"
-      case .initial:
-        return "initial"
-      }
+extension HomePartialChange: CustomStringConvertible {
+  var description: String {
+    switch self {
+    case .loadingFirstPage:
+      return "loadingFirstPage"
+    case .loadFirstPageError:
+      return "loadFirstPageError"
+    case .firstPageLoaded:
+      return "firstPageLoaded"
+    case .loadingNextPage:
+      return "loadingNextPage"
+    case .nextPageLoaded:
+      return "nextPageLoaded"
+    case .loadNextPageError:
+      return "loadNextPageError"
+    case .initial:
+      return "initial"
+    }
+  }
+}
+
+extension HomePartialChange {
+  func reduce(state vs: HomeViewState) -> HomeViewState {
+    print("Reduce: change=\(self)")
+
+    switch self {
+    case .loadingFirstPage:
+      return vs.copyWith(
+        items: CollectionOfOne(.loading) + vs.books.map { .book($0) }
+      )
+    case .loadFirstPageError(let error, let searchTerm):
+      return vs.copyWith(
+        searchTerm: searchTerm,
+        items: [.error(error, firstPage: true)]
+      )
+    case .firstPageLoaded(let books, let searchTerm):
+      return vs.copyWith(
+        searchTerm: searchTerm,
+        items: books.map { .book($0) },
+        books: books
+      )
+    case .loadingNextPage:
+      return vs.copyWith(
+        items: vs.books.map { .book($0) } + CollectionOfOne(.loading)
+      )
+    case .nextPageLoaded(let books, let searchTerm):
+      let newBooks = vs.books + books
+      return vs.copyWith(
+        searchTerm: searchTerm,
+        items: newBooks.map { .book($0) },
+        books: newBooks
+      )
+    case .loadNextPageError(let error, let searchTerm):
+      return vs.copyWith(
+        searchTerm: searchTerm,
+        items: vs.books.map { .book($0) } + CollectionOfOne(.error(error, firstPage: false))
+      )
+    case .initial:
+      return vs
     }
   }
 }
@@ -166,7 +218,10 @@ enum HomePartialChange {
 // MARK: - Interactor
 protocol HomeInteractor {
   func searchBook(query: String) -> Observable<HomePartialChange>
+
   func loadNextPage(query: String, startIndex: Int) -> Observable<HomePartialChange>
+
   func toggleFavorited(book: HomeBook) -> Single<HomeSingleEvent>
+
   func favoritedIds() -> Observable<Set<String>>
 }

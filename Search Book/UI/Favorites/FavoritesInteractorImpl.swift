@@ -23,48 +23,45 @@ class FavoritesInteractorImpl: FavoritesInteractor {
   }
 
   func getBooksBy(ids: Set<String>) -> Observable<FavoritesPartialChange> {
-    let id$ = Observable.from(ids)
-
-    return id$.flatMap { (id: String) -> Observable<FavoritesPartialChange> in
-      self.booksRepo
-        .getBookBy(id: id, with: .localFirst)
-        .map { .init(fromDomain: $0) }
-        .map { .bookLoaded($0) }
-        .catchError { (error: Error) -> Observable<FavoritesPartialChange> in
-            .just(.bookError(.init(from: error), id))
+    Observable.from(ids)
+      .flatMap { [booksRepo] id -> Observable<FavoritesPartialChange> in
+        booksRepo
+          .getBook(by: id, with: .localFirst)
+          .map { result in
+            result.fold(
+              onSuccess: { .bookLoaded(.init(fromDomain: $0)) },
+              onFailure: { .bookError($0, id) }
+            )
+        }
       }
-    }.startWith(.ids(Array(ids)))
+      .startWith(.ids(Array(ids)))
   }
 
   func refresh(ids: Set<String>) -> Observable<FavoritesPartialChange> {
-    let book$s = ids.map { id in
-      self.booksRepo
-        .getBookBy(id: id, with: .networkOnly)
-        .map { FavoritesItem.init(fromDomain: $0) }
+    let books$: [Observable<FavoritesItem>] = ids.map { [booksRepo] id in
+      booksRepo
+        .getBook(by: id, with: .networkOnly)
+        .map { FavoritesItem.init(fromDomain: try $0.get()) }
         .takeLast(1)
     }
     return Observable
-      .combineLatest(book$s) { books in FavoritesPartialChange.refreshSuccess(books) }
+      .combineLatest(books$) { books in FavoritesPartialChange.refreshSuccess(books) }
       .startWith(.refreshing)
-      .catchError { error -> Observable<FavoritesPartialChange> in
-          .just(.refreshError(.init(from: error)))
-    }
+      .catchError { .just(.refreshError($0.toDomainError)) }
   }
-
+  
   func removeFavorite(item: FavoritesItem) -> Single<FavoritesSingleEvent> {
-    return self.favBooksRepo
-      .toggleFavorited(book: item.toDomain())
-      .map { result -> FavoritesSingleEvent in
-        result.fold(
-          onSuccess: {
-            $0.added
-              ? .removeFromFavoritesError(item)
-              : .removedFromFavorites(item)
-          },
-          onFailure: { _ in .removeFromFavoritesError(item) }
-        )
-    }
-  }
-
-
+     return self.favBooksRepo
+       .toggleFavorited(book: item.toDomain())
+       .map { result -> FavoritesSingleEvent in
+         result.fold(
+           onSuccess: {
+             $0.added
+               ? .removeFromFavoritesError(item)
+               : .removedFromFavorites(item)
+           },
+           onFailure: { _ in .removeFromFavoritesError(item) }
+         )
+     }
+   }
 }

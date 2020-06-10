@@ -19,31 +19,37 @@ extension SwinjectStoryboard {
     container.storyboardInitCompleted(HomeVC.self) { resolver, controller in
       controller.homeVM = resolver ~> HomeVM.self
     }
+
     container.storyboardInitCompleted(DetailVC.self) { resolver, controller in
       controller.detailVM = resolver ~> DetailVM.self
     }
+
     container.storyboardInitCompleted(FavoritesVC.self) { resolver, controller in
       controller.favoritesVM = resolver ~> FavoritesVM.self
     }
 
-    // MARK: - Data
-
-    container
-      .autoregister(BookApi.self, initializer: BookApi.init)
-      .inObjectScope(.container)
-    container
-      .register(UserDefaults.self) { _ in UserDefaults.standard }
-      .inObjectScope(.container)
+    // MARK: - Domain
 
     container
       .register(BookRepository.self) { resolver in
         BookRepositoryImpl(bookApi: resolver ~> BookApi.self)
       }
       .inObjectScope(.container)
+
     container
       .register(FavoritedBooksRepository.self) { resolver in
         FavoritedBooksRepositoryImpl(userDefaults: resolver ~> UserDefaults.self)
       }
+      .inObjectScope(.container)
+
+    // MARK: - Data
+
+    container
+      .autoregister(BookApi.self, initializer: BookApi.init)
+      .inObjectScope(.container)
+
+    container
+      .register(UserDefaults.self) { _ in UserDefaults.standard }
       .inObjectScope(.container)
 
     // MARK: - ViewModels
@@ -55,9 +61,11 @@ extension SwinjectStoryboard {
           favoritedBooksRepository: resolver ~> FavoritedBooksRepository.self
         )
       }
-      .inObjectScope(.container)
+      .inObjectScope(.transient)
 
-    container.autoregister(HomeVM.self, initializer: HomeVM.init(homeInteractor:))
+    container
+      .autoregister(HomeVM.self, initializer: HomeVM.init(homeInteractor:))
+      .inObjectScope(.transient)
 
     container
       .register(DetailInteractor.self) { resolver in
@@ -66,9 +74,11 @@ extension SwinjectStoryboard {
           favBookRepo: resolver ~> FavoritedBooksRepository.self
         )
       }
-      .inObjectScope(.container)
+      .inObjectScope(.transient)
 
-    container.autoregister(DetailVM.self, initializer: DetailVM.init(detailInteractor:))
+    container
+      .autoregister(DetailVM.self, initializer: DetailVM.init(detailInteractor:))
+      .inObjectScope(.transient)
 
     container
       .register(FavoritesInteractor.self) { resolver in
@@ -77,9 +87,11 @@ extension SwinjectStoryboard {
           booksRepo: resolver ~> BookRepository.self
         )
       }
-      .inObjectScope(.container)
+      .inObjectScope(.transient)
 
-    container.autoregister(FavoritesVM.self, initializer: FavoritesVM.init(detailInteractor:))
+    container
+      .autoregister(FavoritesVM.self, initializer: FavoritesVM.init(detailInteractor:))
+      .inObjectScope(.transient)
   }
 }
 

@@ -9,77 +9,9 @@
 import UIKit
 import RxCocoa
 import RxSwift
-import Kingfisher
 import MaterialComponents.MaterialSnackbar
 import SwinjectStoryboard
-
-// MARK: - FavoritesCell
-
-private func getMessage(from error: FavoritesError) -> String {
-  switch error {
-  case .networkError:
-    return "Network error"
-  case .serverResponseError(_, let message):
-    return "Response error: \(message)"
-  case .unexpectedError:
-    return "Unexpected error"
-  }
-}
-
-class FavoritesCell: UITableViewCell {
-  @IBOutlet weak var labelSubtitle: UILabel!
-  @IBOutlet weak var labelTitle: UILabel!
-  @IBOutlet weak var imageThumbnail: UIImageView!
-
-  override func awakeFromNib() {
-    super.awakeFromNib()
-    self.selectionStyle = .none
-  }
-
-  func bind(_ item: FavoritesItem, at row: Int) {
-    let title: String = {
-      if item.isLoading {
-        return "Loading..."
-      }
-      if let error = item.error {
-        return "Error: \(getMessage(from: error))"
-      }
-      return item.title ?? "N/A"
-    }()
-    self.labelTitle.text = "\(row + 1) - \(title)"
-
-
-    self.labelSubtitle.text = {
-      if item.isLoading {
-        return "Loading..."
-      }
-      if let error = item.error {
-        return "Error: \(getMessage(from: error))"
-      }
-      return item.subtitle ?? "N/A"
-    }()
-
-
-    let url = URL.init(string: item.thumbnail ?? "")
-
-    let processor = DownsamplingImageProcessor(size: self.imageThumbnail.frame.size)
-    >> RoundCornerImageProcessor(cornerRadius: 8)
-
-    self.imageThumbnail.kf.indicatorType = .activity
-    self.imageThumbnail.kf.setImage(
-      with: url,
-      placeholder: UIImage.init(named: "no_image.png"),
-      options: [
-          .processor(processor),
-          .scaleFactor(UIScreen.main.scale),
-          .transition(.fade(1)),
-          .cacheOriginalImage
-      ]
-    )
-  }
-}
-
-// MARK: - FavoritesVC
+import RxDataSources
 
 class FavoritesVC: UIViewController {
   var favoritesVM: FavoritesVM!
@@ -107,23 +39,29 @@ class FavoritesVC: UIViewController {
 // MARK: - Bind VM
 private extension FavoritesVC {
   func bindVM() {
-    let items$ = self.favoritesVM
+    // table view data source
+    let dataSource = RxTableViewSectionedAnimatedDataSource<AnimatableSectionModel<String, FavoritesItem>>(
+      configureCell: {
+        dataSource, tableView, indexPath, item -> UITableViewCell in
+        (tableView.dequeueReusableCell(withIdentifier: "FavoritesCell", for: indexPath) as! FavoritesCell)
+          .apply { $0.bind(item, at: indexPath.row) }
+      },
+      canEditRowAtIndexPath: { _, _ in true }
+    )
+
+
+    self.favoritesVM
       .state$
       .map { $0.books ?? [] }
       .distinctUntilChanged()
-
-    // table view data source
-    items$
-      .drive(self.tableView.rx.items(cellIdentifier: "favorites_cell", cellType: FavoritesCell.self)) { row, item, cell in
-        cell.bind(item, at: row)
-      }
+      .map { [AnimatableSectionModel.init(model: "", items: $0)] }
+      .drive(self.tableView.rx.items(dataSource: dataSource))
       .disposed(by: self.disposeBag)
 
     // table view item selected
     self.tableView
       .rx
-      .itemSelected
-      .withLatestFrom(items$) { indexPath, items in items[indexPath.row] }
+      .modelSelected(FavoritesItem.self)
       .subscribe(onNext: { [weak self] item in self?.toDetailVC(with: item) })
       .disposed(by: self.disposeBag)
 
@@ -144,19 +82,17 @@ private extension FavoritesVC {
     // process intents
     self.favoritesVM
       .process(
-        intent$: .merge([
-          self.tableView
-            .rx
-            .itemDeleted
-            .withLatestFrom(items$) { indexPath, items in
-              items[indexPath.row]
-            }
-            .map { .removeFavorite($0) },
-          self.refreshControl
-            .rx
-            .controlEvent(.valueChanged)
-            .map { .refresh }
-        ]
+        intent$: .merge(
+          [
+            self.tableView
+              .rx
+              .modelDeleted(FavoritesItem.self)
+              .map { .removeFavorite($0) },
+            self.refreshControl
+              .rx
+              .controlEvent(.valueChanged)
+              .map { .refresh },
+          ]
         )
       )
       .disposed(by: self.disposeBag)

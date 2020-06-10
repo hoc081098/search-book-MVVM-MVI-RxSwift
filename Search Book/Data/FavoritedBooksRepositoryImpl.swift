@@ -2,7 +2,7 @@
 //  FavoritedBooksRepositoryImpl.swift
 //  Search Book
 //
-//  Created by HOANG TAN DUY on 9/9/19.
+//  Created by Petrus Nguyễn Thái Học on 9/9/19.
 //  Copyright © 2019 Petrus Nguyễn Thái Học. All rights reserved.
 //
 
@@ -22,8 +22,6 @@ class FavoritedBooksRepositoryImpl: FavoritedBooksRepository {
     .distinctUntilChanged()
     .map { ids in Set(ids ?? []) }
     .share(replay: 1, scope: .whileConnected)
-
-  private let userDefaultsScheduler = SerialDispatchQueueScheduler(qos: .userInitiated)
 
   init(userDefaults: UserDefaults) {
     self.userDefaults = userDefaults
@@ -45,7 +43,7 @@ class FavoritedBooksRepositoryImpl: FavoritedBooksRepository {
 
         return .just(.success(.init(added: !contains, book: book)))
       }
-      .subscribeOn(self.userDefaultsScheduler)
+      .subscribeOn(ConcurrentMainScheduler.instance)
   }
 
   func favoritedIds() -> Observable<Set<String>> { favoritedIds$ }

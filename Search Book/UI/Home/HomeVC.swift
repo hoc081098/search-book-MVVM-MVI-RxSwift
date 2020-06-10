@@ -9,95 +9,16 @@
 import UIKit
 import RxSwift
 import RxCocoa
-import Kingfisher
 import RxDataSources
 import MaterialComponents.MaterialSnackbar
 import SwinjectStoryboard
 import Swinject
 import MaterialComponents.MaterialButtons
 
-// MARK: - Table View Cells
-
-class LoadingCell: UITableViewCell {
-  @IBOutlet weak var indicator: UIActivityIndicatorView!
-
-  func bind() {
-    indicator.startAnimating()
-  }
-}
-
-class ErrorCell: UITableViewCell {
-  var tapped: (() -> Void)?
-
-  @IBAction func tappedRetry(_ sender: Any) {
-    tapped?()
-  }
-  @IBOutlet weak var lableError: UILabel!
-
-  func bind(_ error: HomeError) {
-    self.lableError.text = error.message
-  }
-}
-
-class HomeCell: UITableViewCell {
-  @IBOutlet weak var imageThumbnail: UIImageView!
-  @IBOutlet weak var labelTitle: UILabel!
-  @IBOutlet weak var labelSubtitle: UILabel!
-  @IBOutlet weak var imageFav: UIImageView!
-
-  var tapImageFav: (() -> ())?
-
-  override func awakeFromNib() {
-    super.awakeFromNib()
-    self.selectionStyle = .none
-
-    self.imageFav.letIt {
-      $0.tintColor = Colors.tintColor
-      $0.isUserInteractionEnabled = true
-      $0.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tappedImageFav)))
-    }
-
-  }
-
-  @objc func tappedImageFav() {
-    self.tapImageFav?()
-  }
-
-  func bind(_ book: HomeBook, _ row: Int) {
-    let url = URL.init(string: book.thumbnail ?? "")
-
-    let processor = DownsamplingImageProcessor(size: self.imageThumbnail.frame.size)
-    >> RoundCornerImageProcessor(cornerRadius: 8)
-
-    self.imageThumbnail.kf.indicatorType = .activity
-    self.imageThumbnail.kf.setImage(
-      with: url,
-      placeholder: UIImage.init(named: "no_image.png"),
-      options: [
-          .processor(processor),
-          .scaleFactor(UIScreen.main.scale),
-          .transition(.fade(1)),
-          .cacheOriginalImage
-      ]
-    )
-
-    self.labelTitle.text = "\(row) - \(book.title ?? "No title")"
-    self.labelSubtitle.text = book.subtitle ?? "No subtitle"
-
-    let newImage = book.isFavorited.flatMap { (fav: Bool) -> UIImage? in
-      return fav ? UIImage(named: "baseline_favorite_white_36pt") : UIImage(named: "baseline_favorite_border_white_36pt")
-    }
-    UIView.transition(
-      with: self.imageFav,
-      duration: 0.4,
-      options: .transitionCrossDissolve,
-      animations: { self.imageFav.image = newImage })
-  }
-}
-
 // MARK: - HomeVC
 
 class HomeVC: UIViewController {
+
   var homeVM: HomeVM!
   private let disposeBag = DisposeBag()
   private let intentS = PublishRelay<HomeIntent>()
@@ -140,50 +61,27 @@ class HomeVC: UIViewController {
 
 // MARK: - Bind VM
 private extension HomeVC {
-  static func configureCell(
-    tableView: UITableView,
-    indexPath: IndexPath,
-    item: HomeItem,
-    tapImageFav: @escaping (HomeBook) -> (),
-    tappedRetry: @escaping (Bool) -> ()
-  ) -> UITableViewCell {
-    switch item {
-    case .book(let book):
-      return (tableView.dequeueReusableCell(withIdentifier: "home_cell", for: indexPath) as! HomeCell).apply {
-        $0.bind(book, indexPath.row)
-        $0.tapImageFav = { tapImageFav(book) }
-      }
-    case .loading:
-      return (tableView.dequeueReusableCell(withIdentifier: "loading_cell", for: indexPath) as! LoadingCell).apply {
-        $0.bind()
-      }
-    case .error(let error, let isFirstPage):
-      return (tableView.dequeueReusableCell(withIdentifier: "error_cell", for: indexPath) as! ErrorCell).apply {
-        $0.tapped = { tappedRetry(isFirstPage) }
-        $0.bind(error)
-      }
-    }
-  }
-
   func bindVM() {
     // create rx datasource
     let dataSource = RxTableViewSectionedReloadDataSource<SectionModel<String, HomeItem>>(
       configureCell: { [weak self] dataSource, tableView, indexPath, item in
-        HomeVC.configureCell(
-          tableView: tableView,
-          indexPath: indexPath,
-          item: item,
-          tapImageFav: {
-            self?.intentS.accept(.toggleFavorite(book: $0))
-          },
-          tappedRetry: {
-            self?.intentS.accept(
-              $0
-                ? .retryLoadFirstPage
-                : .retryLoadNextPage
-            )
+        switch item {
+        case .book(let book):
+          return (tableView.dequeueReusableCell(withIdentifier: "HomeBookCell", for: indexPath) as! HomeBookCell)
+            .apply {
+              $0.bind(book, indexPath.row)
+              $0.delegate = self
           }
-        )
+        case .loading:
+          return (tableView.dequeueReusableCell(withIdentifier: "HomeLoadingCell", for: indexPath) as! HomeLoadingCell)
+            .apply { $0.bind() }
+        case .error(let error, let isFirstPage):
+          return (tableView.dequeueReusableCell(withIdentifier: "HomeErrorCell", for: indexPath) as! HomeErrorCell)
+            .apply {
+              $0.delegate = self
+              $0.bind(error, isFirstPage)
+          }
+        }
       },
       titleForHeaderInSection: { dataSource, sectionIndex in
         return dataSource.sectionModels[sectionIndex].model
@@ -193,15 +91,10 @@ private extension HomeVC {
     // item selected event
     self.tableView
       .rx
-      .itemSelected
-      .compactMap { [weak dataSource] (indexPath) -> HomeBook? in
-        let section = dataSource?.sectionModels[indexPath.section]
-        if let item = section?.items[indexPath.row],
-          case .book(let book) = item {
-          return book
-        } else {
-          return nil
-        }
+      .modelSelected(HomeItem.self)
+      .compactMap { item -> HomeBook? in
+        if case .book(let book) = item { return book }
+        return nil
       }
       .subscribe(onNext: { [weak self] book in self?.toDetailVC(with: book) })
       .disposed(by: disposeBag)
@@ -210,11 +103,11 @@ private extension HomeVC {
     homeVM
       .state$
       .map { state in
-        return [
-          SectionModel(
-            model: "Search for '\(state.searchTerm)', have \(state.books.count) books",
-            items: state.items
-          )
+        [
+            .init(
+              model: "Search for '\(state.searchTerm)', have \(state.books.count) books",
+              items: state.items
+            )
         ]
       }
       .drive(self.tableView.rx.items(dataSource: dataSource))
@@ -238,22 +131,21 @@ private extension HomeVC {
     // process intent
     homeVM
       .process(
-        intent$: Observable.merge([
-          searchBar.rx
-            .text
-            .asObservable()
-            .map { HomeIntent.search(searchTerm: $0 ?? "")
-          },
-          tableView.rx
-            .contentOffset
-            .asObservable()
-            .throttle(.milliseconds(400), scheduler: MainScheduler.instance)
-            .filter { [weak tableView] _ in
-              tableView?.isNearBottomEdge(edgeOffset: 30) ?? false
-            }
-            .map { _ in HomeIntent.loadNextPage },
-          intentS.asObservable()
-        ]
+        intent$: Observable.merge(
+          [
+            searchBar.rx
+              .text
+              .map { HomeIntent.search(searchTerm: $0 ?? "")
+            },
+            tableView.rx
+              .contentOffset
+              .throttle(.milliseconds(400), scheduler: MainScheduler.instance)
+              .filter { [weak tableView] _ in
+                tableView?.isNearBottomEdge(edgeOffset: 30) ?? false
+              }
+              .map { _ in HomeIntent.loadNextPage },
+            intentS.asObservable(),
+          ]
         )
       )
       .disposed(by: disposeBag)
@@ -269,7 +161,7 @@ private extension HomeVC {
   }
 
   func updateBadge(with count: String) {
-    self.labelFavCount.map {
+    self.labelFavCount?.letIt {
       $0.layer.removeAnimation(forKey: "pulse")
       $0.text = count
       let animation = CAKeyframeAnimation(keyPath: "transform.scale").apply {
@@ -388,6 +280,22 @@ private extension HomeVC {
     let storyboard = SwinjectStoryboard.create(name: "Main", bundle: nil)
     let favoritesVC = (storyboard.instantiateViewController(withIdentifier: "FavoritesVC") as! FavoritesVC)
     self.navigationController?.pushViewController(favoritesVC, animated: true)
+  }
+}
+
+extension HomeVC: HomeBookCellDelegate {
+  func homeBookCell(_ cell: HomeBookCell, didToggleFavorite book: HomeBook) {
+    self.intentS.accept(.toggleFavorite(book: book))
+  }
+}
+
+extension HomeVC: HomeErrorCellDelegate {
+  func homeErrorCell(_ cell: HomeErrorCell, didTapRetry isFirstPage: Bool) {
+    self.intentS.accept(
+      isFirstPage
+        ? .retryLoadFirstPage
+        : .retryLoadNextPage
+    )
   }
 }
 
