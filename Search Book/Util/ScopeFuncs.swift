@@ -17,7 +17,7 @@ extension ScopeFunc {
   }
 
   @inline(__always) func letIt<R>(block: (Self) -> R) -> R {
-    return block(self)
+    block(self)
   }
 }
 

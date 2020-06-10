@@ -19,7 +19,7 @@ class FavoritesInteractorImpl: FavoritesInteractor {
   }
 
   func favoritedIds() -> Observable<Set<String>> {
-    return self.favBooksRepo.favoritedIds()
+    self.favBooksRepo.favoritedIds()
   }
 
   func getBooksBy(ids: Set<String>) -> Observable<FavoritesPartialChange> {
@@ -51,7 +51,7 @@ class FavoritesInteractorImpl: FavoritesInteractor {
   }
 
   func removeFavorite(item: FavoritesItem) -> Single<FavoritesSingleEvent> {
-    return self.favBooksRepo
+    self.favBooksRepo
       .toggleFavorited(book: item.toDomain())
       .map { result -> FavoritesSingleEvent in
         result.fold(

@@ -93,7 +93,7 @@ private extension HomeVC {
         }
       },
       titleForHeaderInSection: { dataSource, sectionIndex in
-        return dataSource.sectionModels[sectionIndex].model
+        dataSource.sectionModels[sectionIndex].model
       }
     )
 
@@ -316,6 +316,6 @@ extension HomeVC: UITableViewDelegate {
 
 extension UIScrollView {
   func isNearBottomEdge(edgeOffset: CGFloat) -> Bool {
-    return self.contentOffset.y + self.frame.size.height + edgeOffset > self.contentSize.height
+    self.contentOffset.y + self.frame.size.height + edgeOffset > self.contentSize.height
   }
 }

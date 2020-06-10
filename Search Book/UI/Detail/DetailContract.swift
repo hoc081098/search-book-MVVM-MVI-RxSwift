@@ -109,7 +109,7 @@ extension BookDetail {
   }
 
   func withFavorited(_ isFavorited: Bool) -> BookDetail {
-    return BookDetail.init(
+    BookDetail.init(
       id: id,
       title: title,
       subtitle: subtitle,
@@ -123,7 +123,7 @@ extension BookDetail {
   }
 
   func toDomain() -> Book {
-    return Book(
+    Book(
       id: id,
       title: title,
       subtitle: subtitle,
