@@ -16,7 +16,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="WE2-xM-s1Z">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="144" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="WE2-xM-s1Z">
                                 <rect key="frame" x="0.0" y="88" width="375" height="690"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
@@ -77,15 +77,15 @@
                                             <outlet property="labelTitle" destination="zRY-2T-mHT" id="thp-xN-Oom"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="HomeLoadingCell" rowHeight="96" id="WW0-Q5-tM5" customClass="HomeLoadingCell" customModule="Search_Book" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="180.33332824707031" width="375" height="96"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="HomeLoadingCell" id="WW0-Q5-tM5" customClass="HomeLoadingCell" customModule="Search_Book" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="180.33332824707031" width="375" height="84.333335876464844"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="WW0-Q5-tM5" id="rCW-v3-3bT">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="96"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="84.333335876464844"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="cBE-DX-CRL">
-                                                    <rect key="frame" x="177.66666666666666" y="32" width="20" height="32"/>
+                                                    <rect key="frame" x="177.66666666666666" y="32" width="20" height="20.333333333333329"/>
                                                 </activityIndicatorView>
                                             </subviews>
                                             <constraints>
@@ -99,21 +99,21 @@
                                             <outlet property="indicator" destination="cBE-DX-CRL" id="VwB-r5-ni9"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="HomeErrorCell" rowHeight="96" id="Ie6-G3-cBY" customClass="HomeErrorCell" customModule="Search_Book" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="276.33332824707031" width="375" height="96"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="HomeErrorCell" id="Ie6-G3-cBY" customClass="HomeErrorCell" customModule="Search_Book" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="264.66666412353516" width="375" height="83"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Ie6-G3-cBY" id="6Eg-dh-PFD">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="96"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="83"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Error" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ix5-zY-DHg">
-                                                    <rect key="frame" x="8" y="8" width="359" height="32"/>
+                                                    <rect key="frame" x="8" y="8" width="359" height="19"/>
                                                     <fontDescription key="fontDescription" name="Thonburi" family="Thonburi" pointSize="14"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IEh-6A-PWQ">
-                                                    <rect key="frame" x="32" y="48" width="311" height="40"/>
+                                                    <rect key="frame" x="32" y="35" width="311" height="40"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="40" id="gn8-lt-E2L"/>
                                                     </constraints>

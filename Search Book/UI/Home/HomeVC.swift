@@ -31,6 +31,8 @@ class HomeVC: UIViewController {
   private weak var searchBar: UISearchBar!
   private var fabY: CGFloat?
 
+  private var cellHeights = [IndexPath: CGFloat]()
+
   // MARK: - Lifecycle
 
   override func viewDidLoad() {
@@ -43,8 +45,15 @@ class HomeVC: UIViewController {
     self.navigationItem.titleView = searchBar
     self.searchBar = searchBar
 
-    self.tableView.estimatedRowHeight = 104
-    self.tableView.rowHeight = UITableView.automaticDimension
+    self.tableView.rx
+      .willDisplayCell
+      .subscribe(onNext: { [weak self] in
+        self?.cellHeights[$0.indexPath] = $0.cell.frame.size.height
+      })
+      .disposed(by: self.disposeBag)
+    self.tableView.rx
+      .setDelegate(self)
+      .disposed(by: self.disposeBag)
 
     bindVM()
   }
@@ -296,6 +305,12 @@ extension HomeVC: HomeErrorCellDelegate {
         ? .retryLoadFirstPage
         : .retryLoadNextPage
     )
+  }
+}
+
+extension HomeVC: UITableViewDelegate {
+  func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+    self.cellHeights[indexPath] ?? UITableView.automaticDimension
   }
 }
 
