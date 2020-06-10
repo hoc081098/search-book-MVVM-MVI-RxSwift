@@ -60,16 +60,16 @@ PODS:
   - RxAlamofire/Core (5.0.0):
     - Alamofire (~> 4.8)
     - RxSwift (~> 5.0)
-  - RxCocoa (5.0.0):
+  - RxCocoa (5.1.1):
     - RxRelay (~> 5)
     - RxSwift (~> 5)
   - RxDataSources (4.0.1):
     - Differentiator (~> 4.0)
     - RxCocoa (~> 5.0)
     - RxSwift (~> 5.0)
-  - RxRelay (5.0.0):
+  - RxRelay (5.1.1):
     - RxSwift (~> 5)
-  - RxSwift (5.0.0)
+  - RxSwift (5.1.1)
   - Swinject (2.6.2)
   - SwinjectAutoregistration (2.6.0):
     - Swinject (~> 2.6)
@@ -77,20 +77,20 @@ PODS:
     - Swinject (~> 2.6)
 
 DEPENDENCIES:
-  - Alamofire
-  - Kingfisher
-  - MaterialComponents/Buttons
-  - MaterialComponents/Snackbar
-  - RxAlamofire (~> 5.0)
-  - RxCocoa (~> 5.0)
-  - RxDataSources (~> 4.0)
-  - RxSwift (~> 5.0)
-  - Swinject
-  - SwinjectAutoregistration
-  - SwinjectStoryboard
+  - Alamofire (~> 4.8.2)
+  - Kingfisher (~> 5.7.0)
+  - MaterialComponents/Buttons (~> 86.0.0)
+  - MaterialComponents/Snackbar (~> 86.0.0)
+  - RxAlamofire (~> 5.0.0)
+  - RxCocoa (~> 5.1.1)
+  - RxDataSources (~> 4.0.1)
+  - RxSwift (~> 5.1.1)
+  - Swinject (~> 2.6.2)
+  - SwinjectAutoregistration (~> 2.6.0)
+  - SwinjectStoryboard (~> 2.2.0)
 
 SPEC REPOS:
-  https://github.com/cocoapods/specs.git:
+  https://github.com/CocoaPods/Specs.git:
     - Alamofire
     - Differentiator
     - Kingfisher
@@ -114,14 +114,14 @@ SPEC CHECKSUMS:
   MDFInternationalization: 010097556d6b09d2c4ea38e0820ea6d37be6a314
   MDFTextAccessibility: 85c09a1bd9c321f494348e632a25063bcda35a53
   RxAlamofire: e7875a012aff55345672d0f70a2a9cd6aeb0f211
-  RxCocoa: fcf32050ac00d801f34a7f71d5e8e7f23026dcd8
+  RxCocoa: 32065309a38d29b5b0db858819b5bf9ef038b601
   RxDataSources: efee07fa4de48477eca0a4611e6d11e2da9c1114
-  RxRelay: 4f7409406a51a55cd88483f21ed898c234d60f18
-  RxSwift: 8b0671caa829a763bbce7271095859121cbd895f
+  RxRelay: d77f7d771495f43c556cbc43eebd1bb54d01e8e9
+  RxSwift: 81470a2074fa8780320ea5fe4102807cb7118178
   Swinject: cf7458774b1b00323080a9c67e47a1ee7f9d2af1
   SwinjectAutoregistration: 93a908f7543c401b0c315305ac0ae501efdbce89
   SwinjectStoryboard: 32512ef16c2b0ff5b8f823b23539c4a50f6d3383
 
-PODFILE CHECKSUM: 6bc734a30132f8880c466b7f82035275972a9157
+PODFILE CHECKSUM: 7776e7c37907f24b2ae4bacbad9e8c2a67a173af
 
-COCOAPODS: 1.6.1
+COCOAPODS: 1.8.4

@@ -10,52 +10,62 @@ import Foundation
 import RxSwift
 
 class DetailInteractorImpl: DetailInteractor {
-    private let bookRepository: BookRepository
-    private let favBookRepo: FavoritedBooksRepository
+  private let bookRepository: BookRepository
+  private let favBookRepo: FavoritedBooksRepository
 
-    init(bookRepository: BookRepository, favBookRepo: FavoritedBooksRepository) {
-        self.bookRepository = bookRepository
-        self.favBookRepo = favBookRepo
-    }
+  init(bookRepository: BookRepository, favBookRepo: FavoritedBooksRepository) {
+    self.bookRepository = bookRepository
+    self.favBookRepo = favBookRepo
+  }
 
-    func refresh(id: String) -> Observable<DetailPartialChange> {
-        return bookRepository
-            .getBookBy(id: id, with: .localFirst)
-            .delay(.seconds(2), scheduler: MainScheduler.instance)
-            .map(BookDetail.init(fromDomain:))
-            .map { .refreshSuccess($0) }
-            .startWith(.refreshing)
-            .catchError { (error) -> Observable<DetailPartialChange> in .just(.refreshError(.init(from: error))) }
-    }
+  func refresh(id: String) -> Observable<DetailPartialChange> {
+    bookRepository
+      .getBook(by: id, with: .localFirst)
+      .delay(.milliseconds(1_500), scheduler: MainScheduler.instance)
+      .map { result in
+        result.fold(
+          onSuccess: { .refreshSuccess(.init(fromDomain: $0)) },
+          onFailure: { .refreshError($0) }
+        )
+      }
+      .startWith(.refreshing)
+  }
 
-    func getDetailBy(id: String) -> Observable<DetailPartialChange> {
-        return bookRepository
-            .getBookBy(id: id, with: .networkOnly)
-            .map(BookDetail.init(fromDomain:))
-            .map { .detailLoaded($0) }
-            .startWith(.loading)
-            .catchError { (error) -> Observable<DetailPartialChange> in .just(.detailError(.init(from: error))) }
+  func getDetailBy(id: String) -> Observable<DetailPartialChange> {
+    bookRepository
+      .getBook(by: id, with: .networkOnly)
+      .map { result in
+        result.fold(
+          onSuccess: { .detailLoaded(.init(fromDomain: $0)) },
+          onFailure: { .detailError($0) }
+        )
+      }
+      .startWith(.loading)
+
+  }
+
+  func favoritedIds() -> Observable<Set<String>> {
+    self.favBookRepo.favoritedIds()
+  }
+
+  func toggleFavorited(detail: BookDetail) -> Single<DetailSingleEvent> {
+    let book = detail.toDomain()
+
+    return self.favBookRepo
+      .toggleFavorited(book: book)
+      .map { result -> DetailSingleEvent in
+        result.fold(
+          onSuccess: {
+            $0.added
+              ? .addedToFavorited(detail)
+              : .removedFromFavorited(detail)
+          },
+          onFailure: { .toggleFavoritedError($0, detail) }
+        )
     }
-    
-    func favoritedIds() -> Observable<Set<String>> {
-        return self.favBookRepo.favoritedIds()
-    }
-    
-    func toggleFavorited(detail: BookDetail) -> Single<DetailSingleEvent> {
-        return Single
-            .deferred {
-                let result = self.favBookRepo.toggleFavorited(book: detail.toDomain())
-                return .just(result)
-            }
-            .map { (result: ToggleFavoritedResult) -> DetailSingleEvent in
-                let added = result.added
-                let detail = BookDetail.init(fromDomain: result.book)
-                
-                if added {
-                    return .addedToFavorited(detail)
-                } else {
-                    return .removedFromFavorited(detail)
-                }
-        }
-    }
+  }
+
+  deinit {
+    print("\(self)::deinit")
+  }
 }

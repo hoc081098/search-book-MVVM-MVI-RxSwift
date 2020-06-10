@@ -4,19 +4,18 @@ source 'https://github.com/CocoaPods/Specs.git'
 target 'Search Book' do
   use_frameworks!
   
-  pod 'RxSwift', '~> 5.0'
-  pod 'RxCocoa', '~> 5.0'
-  # pod 'RxSwiftExt', '~> 5.0'
-  pod 'RxDataSources', '~> 4.0'
+  pod 'RxSwift', '~> 5.1.1'
+  pod 'RxCocoa', '~> 5.1.1'
+  pod 'RxDataSources', '~> 4.0.1'
   
-  pod 'Alamofire'
-  pod 'RxAlamofire', '~> 5.0'
+  pod 'Alamofire', '~> 4.8.2'
+  pod 'RxAlamofire', '~> 5.0.0'
   
-  pod 'Kingfisher'
-  pod 'MaterialComponents/Snackbar'
-  pod 'MaterialComponents/Buttons'
+  pod 'Kingfisher', '~> 5.7.0'
+  pod 'MaterialComponents/Snackbar', '~> 86.0.0'
+  pod 'MaterialComponents/Buttons', '~> 86.0.0'
 
-  pod 'Swinject'
-  pod 'SwinjectStoryboard'
-  pod 'SwinjectAutoregistration'
+  pod 'Swinject', '~> 2.6.2'
+  pod 'SwinjectStoryboard', '~> 2.2.0'
+  pod 'SwinjectAutoregistration', '~> 2.6.0'
 end

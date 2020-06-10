@@ -10,92 +10,83 @@ import Foundation
 import RxAlamofire
 import RxSwift
 
+// MARK: - BookApi
 class BookApi {
-    func searchBook(query: String, startIndex: Int) -> Single<ApiResult<ApiErrorMessage, BooksResponse>> {
-        return RxAlamofire
-            .requestData(
-                    .get,
-                "https://www.googleapis.com/books/v1/volumes",
-                parameters: [
-                    "q": query,
-                    "startIndex": startIndex
-                ]
-            )
-            .expectingObject(ofType: BooksResponse.self)
-            .asSingle()
-    }
-    
-    func getBookDetailBy(id: String) -> Single<ApiResult<ApiErrorMessage, BookResponse>> {
-        print("BookApi::getBookDetailBy \(id)")
-        return RxAlamofire
-            .requestData(
-                .get,
-                "https://www.googleapis.com/books/v1/volumes/\(id)"
-            )
-            .expectingObject(ofType: BookResponse.self)
-            .asSingle()
-    }
+  private static let baseUrl = "https://www.googleapis.com/books/v1/volumes"
+
+  func searchBook(by query: String, and startIndex: Int) -> Single<Result<BooksResponse, ApiErrorMessage>> {
+    RxAlamofire
+      .requestData(
+          .get,
+        Self.baseUrl,
+        parameters: [
+          "q": query,
+          "startIndex": startIndex
+        ]
+      )
+      .do(onSubscribe: { print("BookApi::searchBook query=\(query), startIndex=\(startIndex)") })
+      .expectingObject(ofType: BooksResponse.self)
+      .asSingle()
+  }
+
+  func getBookDetail(by id: String) -> Single<Result<BookResponse, ApiErrorMessage>> {
+    RxAlamofire
+      .requestData(.get, Self.baseUrl + "/" + id)
+      .do(onSubscribe: { print("BookApi::getBookDetailBy \(id)") })
+      .expectingObject(ofType: BookResponse.self)
+      .asSingle()
+  }
 }
 
-struct ApiErrorMessage: Decodable {
-    let code: Int
-    let message: String
+// MARK: - ApiErrorMessage + Extensions
 
-    init(code: Int, message: String) {
-        self.code = code
-        self.message = message
-    }
+struct ApiErrorMessage: Decodable, Error {
+  let code: Int
+  let message: String
+  let cause: Error?
 
-    init(from decoder: Decoder) throws {
-        let container = try! decoder.container(keyedBy: ApiErrorMessageKeys.self)
-            .nestedContainer(keyedBy: ErrorMessageKeys.self, forKey: .error)
-        self.code = try! container.decode(Int.self, forKey: .code)
-        self.message = try! container.decode(String.self, forKey: .message)
-    }
+  init(code: Int, message: String, cause: Error? = nil) {
+    self.code = code
+    self.message = message
+    self.cause = cause
+  }
 
-    enum ApiErrorMessageKeys: String, CodingKey {
-        case error
-    }
+  init(from decoder: Decoder) throws {
+    let container = try! decoder
+      .container(keyedBy: ApiErrorMessageKeys.self)
+      .nestedContainer(keyedBy: ErrorMessageKeys.self, forKey: .error)
 
-    enum ErrorMessageKeys: String, CodingKey {
-        case code
-        case message
-    }
+    self.code = try! container.decode(Int.self, forKey: .code)
+    self.message = try! container.decode(String.self, forKey: .message)
+    self.cause = nil
+  }
+
+  enum ApiErrorMessageKeys: String, CodingKey {
+    case error
+  }
+
+  enum ErrorMessageKeys: String, CodingKey {
+    case code
+    case message
+  }
 }
 
-enum ApiResult<Error, Value> {
-    case success(Value)
-    case failure(Error)
+private extension Observable where Element == (HTTPURLResponse, Data) {
+  func expectingObject<T: Decodable>(ofType type: T.Type) -> Observable<Result<T, ApiErrorMessage>> {
+    self.map { (httpURLResponse, data) in
 
-    init(value: Value) {
-        self = .success(value)
-    }
+      if 200..<300 ~= httpURLResponse.statusCode {
+        let object = try JSONDecoder().decode(type, from: data)
+        return .success(object)
+      }
 
-    init(error: Error) {
-        self = .failure(error)
+      let apiErrorMessage: ApiErrorMessage
+      do {
+        apiErrorMessage = try JSONDecoder().decode(ApiErrorMessage.self, from: data)
+      } catch {
+        apiErrorMessage = ApiErrorMessage(code: -1, message: "Server error", cause: error)
+      }
+      return .failure(apiErrorMessage)
     }
-}
-
-extension Observable where Element == (HTTPURLResponse, Data) {
-    fileprivate func expectingObject<T: Decodable>(ofType type: T.Type) -> Observable<ApiResult<ApiErrorMessage, T>> {
-        return self.map { (httpURLResponse, data) -> ApiResult<ApiErrorMessage, T> in
-            switch httpURLResponse.statusCode {
-            case 200...299:
-                // is status code is successful we can safely decode to our expected type T
-                let object = try JSONDecoder().decode(type, from: data)
-                return .success(object)
-            default:
-                // otherwise try
-                let apiErrorMessage: ApiErrorMessage
-                do {
-                    // to decode an expected error
-                    apiErrorMessage = try JSONDecoder().decode(ApiErrorMessage.self, from: data)
-                } catch _ {
-                    // or not. (this occurs if the API failed or doesn't return a handled exception)
-                    apiErrorMessage = ApiErrorMessage(code: -1, message: "Server error")
-                }
-                return .failure(apiErrorMessage)
-            }
-        }
-    }
+  }
 }

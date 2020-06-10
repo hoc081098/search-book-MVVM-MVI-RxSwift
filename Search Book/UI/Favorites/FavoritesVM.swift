@@ -13,128 +13,59 @@ import RxSwift
 import RxCocoa
 
 class FavoritesVM: MviViewModelType {
-    static let initialState = FavoritesViewState(
-        books: nil,
-        isRefreshing: false
+  private let intentS = PublishRelay<FavoritesIntent>()
+  private let singleEventS = PublishRelay<FavoritesSingleEvent>()
+  private let viewStateS: BehaviorRelay<FavoritesViewState>
+
+  private let detailInteractor: FavoritesInteractor
+  private let disposeBag = DisposeBag()
+
+  // MARK: - Implements `MviViewModelType`
+
+  var state$: Driver<FavoritesViewState> { self.viewStateS.asDriver() }
+
+  var singleEvent$: Signal<FavoritesSingleEvent> { self.singleEventS.asSignal() }
+
+  func process(intent$: Observable<FavoritesIntent>) -> Disposable { intent$.bind(to: intentS) }
+
+  // MARK: - Initializer
+
+  init(detailInteractor: FavoritesInteractor) {
+    self.detailInteractor = detailInteractor
+
+    let initialState = FavoritesViewState(
+      books: nil,
+      isRefreshing: false
     )
+    self.viewStateS = .init(value: initialState)
 
-    private let intentS = PublishRelay<FavoritesIntent>()
-    private let singleEventS = PublishRelay<FavoritesSingleEvent>()
-    private let viewStateS = BehaviorRelay<FavoritesViewState>(value: initialState)
+    let booksChange$ = self.detailInteractor
+      .favoritedIds()
+      .flatMapLatest { [detailInteractor] in detailInteractor.getBooksBy(ids: $0) }
 
-    private let detailInteractor: FavoritesInteractor
-    private let disposeBag = DisposeBag()
+    let refreshChange$ = self.intentS
+      .filter { $0 == .refresh }
+      .withLatestFrom(self.detailInteractor.favoritedIds())
+      .flatMapFirst { [detailInteractor] in detailInteractor.refresh(ids: $0) }
 
-    let state$: Driver<FavoritesViewState>
-    let singleEvent$: Signal<FavoritesSingleEvent>
+    Observable.merge([booksChange$, refreshChange$])
+      .scan(initialState) { $1.reduce(state: $0) }
+      .distinctUntilChanged()
+      .bind(to: self.viewStateS)
+      .disposed(by: self.disposeBag)
 
-    func process(intent$: Observable<FavoritesIntent>) -> Disposable {
-        return intent$.bind(to: intentS)
-    }
+    self.intentS
+      .compactMap {
+        if case .removeFavorite(let item) = $0 { return item }
+        return nil
+      }
+      .concatMap { [detailInteractor] in detailInteractor.removeFavorite(item: $0) }
+      .subscribe(onNext: { [singleEventS] in singleEventS.accept($0) })
+      .disposed(by: self.disposeBag)
+  }
 
-    init(detailInteractor: FavoritesInteractor) {
-        self.detailInteractor = detailInteractor
-        self.singleEvent$ = singleEventS.asSignal()
-        self.state$ = viewStateS.asDriver()
-
-        let booksChange$ = self.detailInteractor
-            .favoritedIds()
-            .flatMapLatest { [detailInteractor] ids in
-                detailInteractor.getBooksBy(ids: ids)
-        }
-
-        let refreshChange$ = self.intentS
-            .filter { intent in
-                if case .refresh = intent { return true }
-                else { return false }
-            }
-            .withLatestFrom(self.detailInteractor.favoritedIds())
-            .flatMapFirst { [detailInteractor] ids in
-                detailInteractor.refresh(ids: ids)
-        }
-
-        Observable.merge([booksChange$, refreshChange$])
-            .scan(FavoritesVM.initialState, accumulator: FavoritesVM.reducer)
-            .distinctUntilChanged()
-            .bind(to: self.viewStateS)
-            .disposed(by: self.disposeBag)
-
-        self.intentS
-            .compactMap { intent -> FavoritesItem? in
-                if case .removeFavorite(let item) = intent {
-                    return item
-                } else {
-                    return nil
-                }
-            }
-            .concatMap { [detailInteractor] in
-                detailInteractor.removeFavorite(item: $0)
-            }
-            .subscribe(onNext: { [weak self] event in
-                self?.singleEventS.accept(event)
-            })
-            .disposed(by: self.disposeBag)
-    }
-
-    deinit {
-        print("FavoritesVM::deinit")
-    }
-
-    static func reducer(vs: FavoritesViewState, change: FavoritesPartialChange) -> FavoritesViewState {
-        print(change)
-        switch change {
-        case .bookLoaded(let book):
-            return vs.copyWith(books: replace(items: vs.books ?? [], by: book))
-        case .bookError(let error, let id):
-            let books = vs.books!.map { book -> FavoritesItem in
-                if book.id == id {
-                    if book.isLoading {
-                        return book.copyWith(
-                            isLoading: false,
-                            error: error
-                        )
-                    } else {
-                        return book
-                    }
-                } else {
-                    return book
-                }
-            }
-            return vs.copyWith(books: books)
-        case .refreshSuccess(let books):
-            return vs.copyWith(books: books, isRefreshing: false)
-        case .refreshError(_):
-            return vs.copyWith(books: vs.books ?? [], isRefreshing: false)
-        case .ids(let ids):
-            return vs.copyWith(books:
-                    ids.map { id in
-                        FavoritesItem.init(
-                            isLoading: true,
-                            error: nil,
-                            id: id,
-                            title: nil,
-                            subtitle: nil,
-                            thumbnail: nil)
-                })
-        case .refreshing:
-            return vs.copyWith(books: vs.books ?? [], isRefreshing: true)
-        }
-    }
-
-    static func replace(items: [FavoritesItem], by newItem: FavoritesItem) -> [FavoritesItem] {
-        return items.map { item in
-            if item.id == newItem.id {
-                return item.copyWith(
-                    isLoading: false,
-                    error: nil,
-                    title: newItem.title,
-                    subtitle: newItem.subtitle,
-                    thumbnail: newItem.thumbnail
-                )
-            } else {
-                return item
-            }
-        }
-    }
+  deinit {
+    print("FavoritesVM::deinit")
+  }
 }
 

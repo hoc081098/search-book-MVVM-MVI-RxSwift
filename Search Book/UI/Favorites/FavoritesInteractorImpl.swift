@@ -10,62 +10,62 @@ import Foundation
 import RxSwift
 
 class FavoritesInteractorImpl: FavoritesInteractor {
-    private let favBooksRepo: FavoritedBooksRepository
-    private let booksRepo: BookRepository
+  private let favBooksRepo: FavoritedBooksRepository
+  private let booksRepo: BookRepository
 
-    init(favBooksRepo: FavoritedBooksRepository, booksRepo: BookRepository) {
-        self.favBooksRepo = favBooksRepo
-        self.booksRepo = booksRepo
-    }
+  init(favBooksRepo: FavoritedBooksRepository, booksRepo: BookRepository) {
+    self.favBooksRepo = favBooksRepo
+    self.booksRepo = booksRepo
+  }
 
-    func favoritedIds() -> Observable<Set<String>> {
-        return self.favBooksRepo.favoritedIds()
-    }
+  func favoritedIds() -> Observable<[String]> {
+    self.favBooksRepo.favoritedIds().map { $0.sorted() }
+  }
 
-    func getBooksBy(ids: Set<String>) -> Observable<FavoritesPartialChange> {
-        let id$ = Observable.from(ids)
-        
-        return id$.flatMap { (id: String) -> Observable<FavoritesPartialChange> in
-            self.booksRepo
-                .getBookBy(id: id, with: .localFirst)
-                .map { .init(fromDomain: $0) }
-                .map { .bookLoaded($0) }
-                .catchError { (error: Error) -> Observable<FavoritesPartialChange> in
-                    .just(.bookError(.init(from: error), id))
-                }
-            }.startWith(.ids(Array(ids)))
-    }
-    
-    func refresh(ids: Set<String>) -> Observable<FavoritesPartialChange> {
-        let book$s = ids.map { id in
-            self.booksRepo
-                .getBookBy(id: id, with: .networkOnly)
-                .map { FavoritesItem.init(fromDomain: $0) }
-                .takeLast(1)
+  func getBooksBy(ids: [String]) -> Observable<FavoritesPartialChange> {
+    Observable.from(ids)
+      .flatMap { [booksRepo] id -> Observable<FavoritesPartialChange> in
+        booksRepo
+          .getBook(by: id, with: .localFirst)
+          .map { result in
+            result.fold(
+              onSuccess: { .bookLoaded(.init(fromDomain: $0)) },
+              onFailure: { .bookError($0, id) }
+            )
         }
-        return Observable
-            .combineLatest(book$s) { books in FavoritesPartialChange.refreshSuccess(books) }
-            .startWith(.refreshing)
-            .catchError{ error -> Observable<FavoritesPartialChange> in
-                .just(.refreshError(.init(from: error)))
-            }
+      }
+      .startWith(.ids(Array(ids)))
+  }
+
+  func refresh(ids: [String]) -> Observable<FavoritesPartialChange> {
+    let books$: [Observable<FavoritesItem>] = ids.map { [booksRepo] id in
+      booksRepo
+        .getBook(by: id, with: .networkOnly)
+        .map { FavoritesItem.init(fromDomain: try $0.get()) }
+        .takeLast(1)
     }
-    
-    func removeFavorite(item: FavoritesItem) -> Single<FavoritesSingleEvent> {
-        return Single
-            .deferred {
-                let result = self.favBooksRepo
-                    .toggleFavorited(book: item.toDomain())
-                return .just(result)
-            }
-            .map { (result: ToggleFavoritedResult) -> FavoritesSingleEvent in
-                if result.added {
-                    return .removeFromFavoritesError(item)
-                } else {
-                    return .removedFromFavorites(item)
-                }
-        }
+    return Observable
+      .zip(books$) { books in FavoritesPartialChange.refreshSuccess(books) }
+      .startWith(.refreshing)
+      .catchError { .just(.refreshError($0.toDomainError)) }
+  }
+
+  func removeFavorite(item: FavoritesItem) -> Single<FavoritesSingleEvent> {
+    self.favBooksRepo
+      .toggleFavorited(book: item.toDomain())
+      .map { result -> FavoritesSingleEvent in
+        result.fold(
+          onSuccess: {
+            $0.added
+              ? .removeFromFavoritesError(item)
+              : .removedFromFavorites(item)
+          },
+          onFailure: { _ in .removeFromFavoritesError(item) }
+        )
     }
-    
-    
+  }
+
+  deinit {
+    print("\(self)::deinit")
+  }
 }
