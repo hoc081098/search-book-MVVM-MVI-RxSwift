@@ -8,7 +8,7 @@ target 'Search Book' do
   pod 'RxCocoa', '~> 5.1.1'
   pod 'RxDataSources', '~> 4.0.1'
   
-  pod 'Alamofire', '~> 4.8.2'
+  pod 'Alamofire', '~> 4.9.0'
   pod 'RxAlamofire', '~> 5.0.0'
   
   pod 'Kingfisher', '~> 5.7.0'
