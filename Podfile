@@ -9,7 +9,7 @@ target 'Search Book' do
   pod 'RxDataSources', '~> 4.0.1'
   
   pod 'Alamofire', '~> 4.8.2'
-  pod 'RxAlamofire', '~> 5.0.0'
+  pod 'RxAlamofire', '~> 6.1.0'
   
   pod 'Kingfisher', '~> 5.7.0'
   pod 'MaterialComponents/Snackbar', '~> 86.0.0'
