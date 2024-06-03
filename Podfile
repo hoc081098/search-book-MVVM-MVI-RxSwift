@@ -15,7 +15,7 @@ target 'Search Book' do
   pod 'MaterialComponents/Snackbar', '~> 86.0.0'
   pod 'MaterialComponents/Buttons', '~> 86.0.0'
 
-  pod 'Swinject', '~> 2.6.2'
+  pod 'Swinject', '~> 2.9.0'
   pod 'SwinjectStoryboard', '~> 2.2.0'
   pod 'SwinjectAutoregistration', '~> 2.6.0'
 end
