@@ -17,5 +17,5 @@ target 'Search Book' do
 
   pod 'Swinject', '~> 2.6.2'
   pod 'SwinjectStoryboard', '~> 2.2.0'
-  pod 'SwinjectAutoregistration', '~> 2.6.0'
+  pod 'SwinjectAutoregistration', '~> 2.9.0'
 end
